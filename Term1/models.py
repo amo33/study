@@ -1,0 +1,13 @@
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+# Use this file to define model 
+class User(db.Model):
+    
+    idx = db.Column(db.Integer, primary_key=True) # db.Column makes restraint on each columns
+    username = db.Column(db.String(64), index=True, unique=True)
+    age = db.Column(db.Integer, primary_key = False)
+    Image = db.Column(db.String(64), primary_key = False)
+    
+    def __repr__(self):
+        return '<USER : {0}>, <AGE : {1}>'.format(self.username, self.age)
+

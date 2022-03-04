@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>	
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+ </head>
+ <body>
+	 <div id = 'default'>
+		<h3>Register page</h3>
+		<form action="/hello" method="post" enctype="multipart/form-data">
+		First name:<br>
+		<input type="text" name="firstname" value=" ">
+		<br>
+		Last name:<br>
+		<input type="text" name="lastname" value=" ">
+		<br>
+		Age:<br>
+		<input type="text" name="age" value=" ">
+		<br>
+		Image:<br>
+		<input type="file" name = "file" value = "">
+		<br>
+		<br>
+		<input type="submit" value="Submit">
+		<br><br>
+		</form> 
+		<button type="button" onclick="location.href='/list'">show list</button>
+		<br><br>
+	</div>
+
+	<div id ="detail">
+		
+		<table>
+			<tbody>
+				<tr>
+					
+					
+					
+				</tr>
+			</tbody>
+		</table>
+		<button type="button" onclick="location.href='/'">Go back to registration</button>
+	</div>
+	
+	<script>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.0</version>
+		</dependency>
+		flag = '{{value}}'
+		if(flag === 'detail'){
+			document.getElementById('default').style = "display:none"
+			document.getElementById('detail').style = "display:block"
+			
+			$.ajax({
+				dataType: "json",
+				url : "data.json",
+				type : 'POST',
+				success : (data)=>{
+					alert("Success")
+					resultHtml(data);
+				},
+				error : ()=>{
+					alert('Error!')
+				}
+			});
+			
+		}
+		else{
+			document.getElementById('default').style = "display:block"
+			document.getElementById('detail').style = "display:none"
+		}
+		function resultHtml(data){
+			let html = '<h3>'+'Showing details of user'+'</h3>';
+			html += "<table border = '1'>";
+			html +='<tr>';
+			html += '<th>Name</th>';
+			html += '<th>Age</th>';
+			html += '<th>Image</th>';
+			html += '<tr>';
+
+			$.each(value, (key, value)=>{
+				html += "<tr align = center>";
+				html += "<td>" + value.Name + "</td>";
+				html += "<td>" + value.Age + "</td>";
+				html += "<td>" + '<img src="' + value.Image + '">' + "</td>";
+			})
+			html += "</table>";
+			$("#Inputs").empty();
+			$("#display").append(html);
+		}
+	</script>
+}
+	
+ </body>
+</html>
