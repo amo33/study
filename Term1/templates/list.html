@@ -55,7 +55,7 @@
             </tr>
             {% for item in values %} 
             <tr>
-                <td><p onclick="location.href = '/hello?value={{item.username}}'">{{item.username}}</p></td>
+                <td><p onclick="location.href = '/hello?value=' + '{{item.username}}'">{{item.username}}</p></td>
                 <td><p>{{item.age}}</p></td>
                 <td><p>{{item.Image}}</p></td>
             </tr>  
@@ -69,7 +69,7 @@
         <div class=" box ">
             <ul>
                 {% for name in values %}
-                    <p onclick="location.href = '/hello?value={{name}}'">{{name}}</p>
+                    <p onclick="location.href = '/hello?value=' + '{{name}}'">{{name}}</p>
                 {% endfor %}
             </ul>
         </div>

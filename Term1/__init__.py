@@ -1,4 +1,7 @@
+from curses.ascii import US
 import os
+from sqlalchemy.exc import IntegrityError
+from matplotlib.font_manager import json_dump
 from models import db, User
 from flask import send_from_directory, Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
@@ -9,9 +12,10 @@ import json
 app = Flask(__name__) # 사용할 flask 앱을 가져온다. 
 # thumb = Thumbnail(app)
 base_dir = os.path.abspath(os.path.dirname(__file__)) # absolute path 지정
+
 img_format = ['jpg','png','peg','jpe']
 db_file = os.path.join(base_dir, 'User.sqlite')
-file_path = "./sample.json" 
+file_path = "study/Term1/sample.json" 
 app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite:///' +db_file # 사용할 DB
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True # 비즈니스 로직이 끝날때 commit 실행(DB 반영) - 다 처리후 결과 DB에 저장
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # track은 안한다.
@@ -32,7 +36,8 @@ db.create_all()
 
 @app.route('/') # flask의 데코레이터로 특정 url에 접속하면 바로 다음 줄에 있는 함수를 호출한다. -> form() 호출
 def form():
-    return render_template('form_submit.html')
+    data = {}
+    return render_template('form_submit.html', types = 'default', data = data)
 
 @app.route('/hello',methods=['GET','POST']) # Use post & Get 
 def action():
@@ -43,39 +48,23 @@ def action():
         argu = request.args.get('value')
         print(argu)
         if argu != None: # if we get some parameter after /hello than use the other function
-            
             names = argu 
-            f = open('Term1/data.txt', "r") 
-            lines = f.read()
-            new_list = lines.split(', ')
-            idx = new_list.index(names)
-            ages = new_list[idx+1]
+            user_info = User.query.filter(User.username==names).all()
+            print(user_info[0])
+            return render_template('form_submit.html', types = 'detail',data = user_info[0])
             
-            img_dir = new_list[idx+2]
-            path = Path('Term1/Image/'+img_dir)
-            image = Image.open(path)
-            size = (128,128)
-            image.thumbnail(size)
-            image.save(Path('Term1/ThumbedImg/'+img_dir))
-           
-            user = {
-                "Name":names, 
-                "Age":ages, 
-                "Image":'Term1/ThumbedImg'+img_dir
-            }
-            with open(file_path, 'w') as outfile:
-                json.dump(user, outfile)
-            return jsonify(user)
         else:
-            return render_template('form_submit.html')
+            data = {}
+            return render_template('form_submit.html', types = 'default', data= data) # if db내에 없는 오류가 발생한다면 다시 연결 
     elif(request.method == "POST"):
-        f = open('Term1/data.txt', "a") # 파일에 내용을 write 한다.
+        data = {}
+        
         k = request.files['file'] 
         rand_form = uuid.uuid1() # 이미지마다 unique명 유지 
         firstname = request.form['firstname']
         lastname = request.form['lastname']
         age = request.form['age']
-
+        img_dir = str(rand_form)+secure_filename(k.filename)
         try: #이미지 오류는 성공 나머지 값들 오류도 내일 넣어주기 
             if (secure_filename(k.filename[-3:]) not in img_format):
                 raise Exception
@@ -83,19 +72,45 @@ def action():
                 raise Exception
         except Exception:
             return render_template('Error_Handling.html')
-
-        lines = [firstname + lastname,', ' ,age, ', ' ,str(rand_form)+secure_filename(k.filename),', ']
+       
+        k.save('study/Term1/Image/'+img_dir) 
+        path = Path('study/Term1/Image/'+img_dir) #thumbnail 시키기 위한 과정 
+        image = Image.open(path)
+        size = (128,128)
+        image.thumbnail(size)
+        image.save(Path('study/Term1/static/ThumbedImg/'+img_dir))
+        user = User(username = firstname+ " " +lastname, age = age,Image = 'ThumbedImg/'+ img_dir) 
+        db.session.add(user)
+        try: # used for unique integrity error 
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return render_template('Error_Handling.html')
+        f = open('study/Term1/data.txt', "a") # 파일에 내용을 write 한다.
+        
+        lines = [firstname + lastname,', ' ,age, ', ' ,'study/Term1/static/ThumbedImg/'+img_dir,', ']
         f.writelines(lines) 
         f.close()
-        
-        user = User(username = firstname+ " " +lastname, age = age,Image = str(rand_form) +secure_filename(k.filename)) 
-        db.session.add(user)
-        db.session.commit()
-        k.save('./Term1/Image/'+str(rand_form)+secure_filename(k.filename))
-        return render_template('form_submit.html')
+        return render_template('form_submit.html', types = 'default', data = data)
         #return render_template('form_action.html', firstname=firstname, lastname= lastname, age = age)
                 #Renders template from the templte folder with the given context 
 
+@app.route('/responsed', methods = ["GET"]) # for ajax & json response between form_submit.html
+def responsed():
+    #argu = json.loads(request.data)
+    #names = argu.get('id')
+    names = request.args.get('value')
+    user_info = User.query.filter(User.username == names).all()
+    
+    user = {
+        "Name":names, 
+        "Age":user_info[0].age, 
+        "Image":user_info[0].Image
+        }
+    print(1)
+    with open(file_path, 'w') as outfile:
+        json.dump(user, outfile)
+    return jsonify(user)        
     
 
 #db파일과 text 파일은 서로 같은 filepath에 있으면 내 코드상 충돌이 일어날거 같아서 filepath를 애초에 다른것으로 함
@@ -120,7 +135,7 @@ def list_show():
     if argu == 'db' :
         return render_template('list.html',types= argu,values = User.query.all())
     elif argu == 'text':
-        f = open('Term1/data.txt', "r")
+        f = open('study/Term1/data.txt', "r")
         lines = f.read()
         new_list = lines.split(', ')
         names = new_list[0::3]
@@ -130,7 +145,7 @@ def list_show():
         #print(lines_list)
         return render_template('list.html', types= argu, Name = names, Age = ages, Image = images) # 데이터들 넘기기
     else:
-        f = open('Term1/data.txt', "r")
+        f = open('study/Term1/data.txt', "r")
         lines = f.read()
         print(type(lines))
         print(lines)
@@ -145,3 +160,24 @@ def list_show():
 if __name__ == '__main__':
     #action.counter = 0
     app.run(host='0.0.0.0', debug = True)
+'''
+            f = open('study/Term1/data.txt', "r") 
+            lines = f.read()
+            new_list = lines.split(', ')
+            idx = new_list.index(names)
+            ages = new_list[idx+1]
+            
+            img_dir = new_list[idx+2]
+            path = Path('study/Term1/Image/'+img_dir)
+            image = Image.open(path)
+            size = (128,128)
+            image.thumbnail(size)
+            image.save(Path('study/Term1/ThumbedImg/'+img_dir))
+            
+            import matplotlib.pyplot as plt
+            import matplotlib.image as img
+            rt = json.dumps(user_info).Image
+            image = img.imread(rt)
+            plt.imshow(image)
+            plt.show()
+            '''

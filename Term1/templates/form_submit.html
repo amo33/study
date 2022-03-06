@@ -8,8 +8,8 @@
   <meta name="Description" content="">
   <title>Document</title>
   <script src="https://code.jquery.com/jquery-latest.min.js"></script>	
-  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
- </head>
+  <link rel="stylesheet" type= "text/css" href="{{url_for('static',filename= 'style.css')}}">
+</head>
  <body>
 	 <div id = 'default'>
 		<h3>Register page</h3>
@@ -35,40 +35,52 @@
 	</div>
 
 	<div id ="detail">
-		
+		<h3>Detail info</h3>
 		<table>
 			<tbody>
 				<tr>
-					
-					
-					
+					<th>User</th>
+					<th>Age</th>
+					<th>Image</th>	
 				</tr>
+					<tr>
+						<td><p>{{data['username']}}</p></td>
+						<td><p>{{data['age']}}</p></td>
+						<td><img src= "{{url_for('static', filename =  data['Image'])}}" alt="user Image" /></td> <!-- need to see again..!! -->
+					</tr>
 			</tbody>
 		</table>
 		<button type="button" onclick="location.href='/'">Go back to registration</button>
 	</div>
 	
 	<script>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.12.0</version>
-		</dependency>
-		flag = '{{value}}'
+
+		let flag = '{{types}}'
+		console.log(flag)
 		if(flag === 'detail'){
 			document.getElementById('default').style = "display:none"
 			document.getElementById('detail').style = "display:block"
-			
+			//let datum = {{data | safe}};
+			//datum = datum.replace(/"/g,"")
+			let datum = '{{data.username}}'; // 계속 오류 났던 이유 : 처음에 접속하면 data를 주어지지 않는다. 이 경우 빈 값을 넣어준다. - 
+			console.log(1)
+			console.log(datum)
+			console.log(typeof(datum))
+			console.log(1)
+			//let val = Object.assign({}, ...datum.map((x) => ({['USER']: x.USER})));
+			//value = val["USER"]
+
+			console.log(1)
 			$.ajax({
-				dataType: "json",
-				url : "data.json",
-				type : 'POST',
-				success : (data)=>{
-					alert("Success")
-					resultHtml(data);
+				url : '/responsed?value='+datum, // 값이 안넘어온다. 이거 해결해야하나다111111111
+				type : 'GET',
+				data : {},
+				success : (file)=>{
+					alert(JSON.stringify(file));
+					
 				},
 				error : ()=>{
-					alert('Error!')
+					alert('Error!');
 				}
 			});
 			
@@ -77,27 +89,8 @@
 			document.getElementById('default').style = "display:block"
 			document.getElementById('detail').style = "display:none"
 		}
-		function resultHtml(data){
-			let html = '<h3>'+'Showing details of user'+'</h3>';
-			html += "<table border = '1'>";
-			html +='<tr>';
-			html += '<th>Name</th>';
-			html += '<th>Age</th>';
-			html += '<th>Image</th>';
-			html += '<tr>';
-
-			$.each(value, (key, value)=>{
-				html += "<tr align = center>";
-				html += "<td>" + value.Name + "</td>";
-				html += "<td>" + value.Age + "</td>";
-				html += "<td>" + '<img src="' + value.Image + '">' + "</td>";
-			})
-			html += "</table>";
-			$("#Inputs").empty();
-			$("#display").append(html);
-		}
 	</script>
-}
+
 	
  </body>
 </html>

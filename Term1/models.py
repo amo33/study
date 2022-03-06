@@ -6,8 +6,17 @@ class User(db.Model):
     idx = db.Column(db.Integer, primary_key=True) # db.Column makes restraint on each columns
     username = db.Column(db.String(64), index=True, unique=True)
     age = db.Column(db.Integer, primary_key = False)
-    Image = db.Column(db.String(64), primary_key = False)
+    Image = db.Column(db.String(512), primary_key = False)
     
     def __repr__(self):
-        return '<USER : {0}>, <AGE : {1}>'.format(self.username, self.age)
+        #lines = []
+        #lines.append(self.username)
+        #lines.append(self.age)
+        #lines.append(self.Image)
+        #return lines
+        line = {}
+        line['USER'] = self.username
+        line['Age'] = self.age
+        line['Image'] = self.Image
+        return str(line)
 
