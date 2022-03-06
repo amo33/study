@@ -1,7 +1,6 @@
 from curses.ascii import US
 import os
 from sqlalchemy.exc import IntegrityError
-from matplotlib.font_manager import json_dump
 from models import db, User
 from flask import send_from_directory, Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
@@ -34,7 +33,7 @@ db.init_app(app)
 db.app = app
 db.create_all()
 
-@app.route('/') # flask의 데코레이터로 특정 url에 접속하면 바로 다음 줄에 있는 함수를 호출한다. -> form() 호출
+@app.route('/') # flask의 데코레이터로 특정 url에 접속하면 바로 다음 줄에 있는 함수를 호출한다. -> form() 호출 / endpoint is nothing 
 def form():
     data = {}
     return render_template('form_submit.html', types = 'default', data = data)
@@ -88,7 +87,7 @@ def action():
             return render_template('Error_Handling.html')
         f = open('study/Term1/data.txt', "a") # 파일에 내용을 write 한다.
         
-        lines = [firstname + lastname,', ' ,age, ', ' ,'study/Term1/static/ThumbedImg/'+img_dir,', ']
+        lines = [firstname + ' ' +lastname,', ' ,age, ', ' ,'study/Term1/static/ThumbedImg/'+img_dir,', ']
         f.writelines(lines) 
         f.close()
         return render_template('form_submit.html', types = 'default', data = data)
@@ -108,7 +107,7 @@ def responsed():
         "Image":user_info[0].Image
         }
     print(1)
-    with open(file_path, 'w') as outfile:
+    with open(file_path, 'w') as outfile: # !!!!!!!!!!! ㅈㅓ자ㅇ 위치 경로 다시 고치기
         json.dump(user, outfile)
     return jsonify(user)        
     
@@ -128,7 +127,7 @@ def submit(tag):
 def show_detail():
     return render_template('detail.html')
 
-@app.route('/list', methods= ['GET','POST'])
+@app.route('/list', methods= ['GET','POST']) # endpoint is list 
 def list_show():
     argu = request.args.get('tag', 'default')
     argu = argu.lower()
