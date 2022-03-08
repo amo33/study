@@ -26,16 +26,19 @@
         <table>
             <tbody>
                 <tr>
+                    <th>ID</th>
                     <th>User</th>
                     <th>Age</th>
                     <th>Image</th>
                 </tr>
                     {% for name in Name %}
+                        {% set item_0 = id[loop.index-1] %}
                         {% set item_1 = Name[loop.index-1] %}
                         {% set item_2 = Age[loop.index-1] %}
                         {% set item_3 = Image[loop.index-1] %}
                         <tr>
-                            <td><p onclick="location.href = '/hello?value={{item_1}}'">{{item_1}}</p></td>
+                            <td><p>{{item_0}}</p></td>
+                            <td><p onclick="location.href = '/hello?value={{item_0}}' + '{{types}}' ">{{item_1}}</p></td>
                             <td><p>{{item_2}}</p></td>
                             <td><p>{{item_3}}</p></td>
                         </tr>  
@@ -48,13 +51,15 @@
         <table>
             <tbody>
             <tr>
+                <th>id</th>
                 <th>Username</th>
                 <th>Age</th>
                 <th>Image</th>
             </tr>
             {% for item in values %} 
             <tr>
-                <td><p onclick="location.href = '/hello?value=' + '{{item.username}}'">{{item.username}}</p></td>
+                <td><p>{{item.idx}}</p></td>
+                <td><p onclick="location.href = '/hello?value=' + '{{item.idx}}' + '{{types}}'">{{item.username}}</p></td>
                 <td><p>{{item.age}}</p></td>
                 <td><p>{{item.Image}}</p></td>
             </tr>  
@@ -79,7 +84,7 @@
         if( flag === 'default'){
             document.getElementById('db').style = "display:none"
             document.getElementById('text').style = "display:none"
-
+            document.getElementById('default').style = "display:none"
         }
         else if(flag === 'db'){
             document.getElementById('db').style = "display:block"
@@ -92,10 +97,7 @@
             document.getElementById('text').style = "display:block"
             document.getElementById('default').style = "display:none"
         }
-        function mySubmit(){
-            document.getElementById("sendname").innerHTML.submit();
-            
-        }
+        
     </script>
 </body>
 </html>
