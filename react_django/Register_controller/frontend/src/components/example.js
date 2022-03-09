@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import List from "./list";
 import Database from "./database";
+import Createuser from "./Createuser";
 import { BrowserRouter as Router, Routes, Route, Link, Redirect} from "react-router-dom";
 /*
 function InputSample() {
@@ -32,12 +33,21 @@ export default class InputSample extends Component {
 
     render(){
         return (
+          <div>
+          <ul>
+          <li><Link to="/create">DB</Link></li>
+          <li><Link to="/join">list</Link></li>
+          <li><Link to="/register">register</Link></li>
+        </ul>
         <Router>
-                <Routes>
-                    <Route path='/join' element={<List/>}></Route> 
-                    <Route path='/create' element = {<Database />}></Route>
-                </Routes>
-        </Router>);
+           <Routes>
+                  <Route path='/join' element={List}></Route> 
+                  <Route path='/create' element = {Database}></Route>
+                  <Route path='/register' element={Createuser}></Route>
+          </Routes>     
+        </Router>
+        </div>
+        );
     }
 }
 

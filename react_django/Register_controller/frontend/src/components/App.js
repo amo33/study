@@ -5,7 +5,7 @@ import InputSample from "./example";
 export default class App extends Component{
 
     render(){
-        return <p><InputSample /></p> ;      
+        return <InputSample />;      // ㅇㅕ기에 p 태그를 넣으면 오류가 생기는데 아무래도 p 태그 안에 불러오는게 h1태그로 감싸져있어서 오류가 발생 
     }
 }
 

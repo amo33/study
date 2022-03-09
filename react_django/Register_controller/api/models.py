@@ -1,7 +1,7 @@
 from curses.ascii import US
+from distutils.command.upload import upload
 from django.db import models
-import string
-import random
+import uuid
 # Create your models here.
 
 ''' can use this at image 
@@ -17,7 +17,8 @@ def generate_unique_code():
     return code
 ''' 
 
-class User(models.Model):
+class USer(models.Model):
+    user_id = models.CharField(max_length=50, unique= True, default=uuid.uuid1)
     username = models.CharField(max_length=20)
     age = models.IntegerField()
-    image = models.TextField()
+    image = models.CharField(max_length=20)
