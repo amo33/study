@@ -48,6 +48,5 @@ export default class InputSample extends Component {
         </Router>
         </div>
         );
-    }
+  }
 }
-
