@@ -21,4 +21,4 @@ class USer(models.Model):
     user_id = models.CharField(max_length=50, unique= True, default=uuid.uuid1)
     username = models.CharField(max_length=20)
     age = models.IntegerField()
-    image = models.CharField(max_length=20)
+    image = models.ImageField(blank = True, null = True, upload_to = "images")

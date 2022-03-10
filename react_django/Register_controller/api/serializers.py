@@ -5,7 +5,7 @@ class Userserializer(serializers.ModelSerializer):
         model = USer
         fields = ('user_id','username', 'age', 'image')
 
-class createUserSerializer(serializers.ModelSerializer): # post 다룬다. 
+class createUserSerializer(serializers.HyperlinkedModelSerializer,serializers.ModelSerializer): # post 다룬다. 
     class Meta:
         model = USer 
-        fields = ('username','age', 'image') # post로 받고 싶은것만 -- > 다시 공부해보기 ~!!!!!!!!!!!!!!!!
+        fields = ('username','age', 'image') # post로 받고 
