@@ -54,16 +54,18 @@ const axiosUserlist = async () =>{
 export default class InputSample extends Component {
     constructor(props){
         super(props);
+        this.handleclickRegister = this.handleclickRegister.bind(this);
     }
+    handleclickRegister(){
 
+    }
     render(){
         return (
-          <div>
-            <Router>
+          <div id = "start">
+            
             <h1>This is start page.</h1>
-            <a href = '/register'> Register </a>
-            <a style={{display: "table-cell"}} href="/register" target="_blank">text</a>
-
+            <Router>
+            <h3><Link to = '/register'> If you want to register click here</Link></h3>
             <h3> <Link to = '/GotoList'>If you want to see userinfo click here</Link></h3>
             
               <Routes>

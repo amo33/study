@@ -43,7 +43,7 @@ export default class Createuser extends Component{
     handleimageuploaded(e){
 
         this.setState({
-            image : e.target.files[0],
+            image : this.target.files[0],
         });
     }
 
@@ -65,27 +65,6 @@ export default class Createuser extends Component{
         datum.append("username", this.state.name);
         datum.append("age", this.state.age);
         datum.append("image", this.state.image);
-       
-        /*
-        const requestUser = {
-            method : 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body : JSON.stringify({
-                username : this.state.name,
-                age : this.state.age,
-                image : this.state.image,
-            }),
-        };
-        fetch("/api/create-user", requestUser)
-        .then((response)=>{
-            response.json()
-        })
-        .then((data)=>{
-            console.log(data);
-        })
-        .catch((error)=>{
-            console.log(error.json());
-        })*/
         for (var key of datum.entries()) {
             console.log(key[0] + ', ' + key[1]);
         }
@@ -94,7 +73,6 @@ export default class Createuser extends Component{
             url : "api/create-user",
             data : datum,
             method : "post",
-            datatype : "JSON",
             async : true,
             enctype : 'multipart/form-data',
             contentType : false,
