@@ -21,7 +21,6 @@ import { useState } from "react";
 //    }));
 export default class Createuser extends Component{
 
-
     constructor(props){
         super(props);
         this.state = {
@@ -94,7 +93,7 @@ export default class Createuser extends Component{
         return (
             <Grid container spacing= {1}>
                 <Grid item xs ={12} align="center">
-                    <Typography component="h4" variant="h4">
+                    <Typography component="h4" variant="h4" style={{cursor:'default'}}>
                         This is creating user page    
                     </Typography>    
                 </Grid>
@@ -114,14 +113,16 @@ export default class Createuser extends Component{
                         onChange={this.handleimageuploaded} > 
                     </input>
                 </Grid>
-                <Grid item xs={12} align="center">
-                    <Button color= 'primary' variant="contained" to = "/GotoList" component={Link}>
-                        Go to list for choosing source form 
-                    </Button>
-                </Grid>
+                
                 <Grid item xs={12} align="center">
                     <Button color= 'primary' variant="contained" onClick={this.handleregisterButtonPressed}>
                         Register user 
+                    </Button>
+                </Grid>
+                
+                <Grid item xs={12} align="center">
+                    <Button color= 'primary' variant="contained" to = "/GotoList" component={Link}>
+                        Go to list for choosing source form 
                     </Button>
                 </Grid>
             </Grid>

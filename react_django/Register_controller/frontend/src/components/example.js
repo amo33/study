@@ -63,16 +63,16 @@ export default class InputSample extends Component {
         return (
           <div id = "start">
             
-            <h1>This is start page.</h1>
+            <h1 style= {{cursor: 'default'}}>This is start page.</h1>
             <Router>
-            <h3><Link to = '/register'> If you want to register click here</Link></h3>
-            <h3> <Link to = '/GotoList'>If you want to see userinfo click here</Link></h3>
+            <h3><Link to = '/register' > If you want to register click here</Link></h3>
+            <h3> <Link to = '/GotoList' >If you want to see userinfo click here</Link></h3>
             
               <Routes>
                       <Route path='/GotoList' element={<List/>}></Route> 
-                      <Route path='/showdb' element ={<Database/>}></Route>
+                      
                       <Route path='/register' element={<Createuser/>}></Route>
-                      <Route path= '/showlist' element ={<Showlist/>}></Route>
+                     
               </Routes>     
             </Router>
           </div>

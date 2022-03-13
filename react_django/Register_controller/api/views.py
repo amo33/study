@@ -11,8 +11,7 @@ from .serializers import Userserializer, createUserSerializer
 from .models import USer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import re 
-import csv 
+import json
 import pandas as pd 
 import sqlite3 
 connection = sqlite3.connect('db.sqlite3')
@@ -33,13 +32,15 @@ class Userview(generics.CreateAPIView):
                     "age": element.age,
                     "Image_flag" : element.Image_flag
                 })
-            return Response(user , status=status.HTTP_200_OK)
+            print(user)
+            return Response(json.dumps(user) , status=status.HTTP_200_OK)
         elif category == 'showlist':
             df = pd.read_csv('data.tsv', sep='\t')
             df_copy = df.copy()
             df_copy.drop(['image', 'user_id'], inplace= True, axis = 1)
             print(df_copy)
             user = df_copy.to_json(orient='records')
+            print(user)
             return Response(user, status = status.HTTP_200_OK)
         else: 
             return Response({'No request': 'Invalid parameter'}, status= status.HTTP_204_NO_CONTENT)

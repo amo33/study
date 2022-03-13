@@ -6,7 +6,7 @@ class Userserializer(serializers.ModelSerializer):
         fields = ('user_id','username', 'age', 'Image_flag')
 
 class createUserSerializer(serializers.ModelSerializer): # post 다룬다. 
-    image = serializers.ImageField( allow_null = True) 
+    # image = serializers.ImageField( allow_empty_file = True) 
     class Meta:
         model = USer 
         fields = ('username','age','image') # post로 받고
