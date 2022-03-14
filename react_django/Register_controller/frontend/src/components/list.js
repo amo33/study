@@ -5,91 +5,6 @@ import  Typography  from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {Link} from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import Createuser from "./Createuser";
-
-
-async function showData(state ,data){
-    const Json_data = JSON.parse(data);
-    try{
-        document.getElementById('showingData').remove();
-        }catch(e){
-        
-        TypeError(e);
-        }
-
-    let g = document.createElement('div');
-    g.setAttribute("id", "showingData");
-    let table = document.createElement('table');
-    g.appendChild(table);
-    let thead = document.createElement('thead');
-    let tbody = document.createElement('tbody');
-    table.appendChild(thead);
-    table.appendChild(tbody);
-    let row_1 = document.createElement('tr');
-    let heading_1 = document.createElement('th');
-    heading_1.innerHTML = "Username";
-    heading_1.style.textAlign = "center";
-    let heading_2 = document.createElement('th');
-    heading_2.innerHTML = "age";
-    heading_2.style.textAlign = "center";
-    let heading_3 = document.createElement('th');
-    heading_3.innerHTML = "Image Flag";
-    heading_3.setAttribute('style','text-align:center');
-    row_1.appendChild(heading_1);
-    row_1.appendChild(heading_2);
-    row_1.appendChild(heading_3);
-    thead.appendChild(row_1);
-    let Scaled_username = '';
-    for(let i=0; i<Json_data.length; i++){
-        let row_2 = document.createElement('tr');
-        let row_2_data_1 = document.createElement('td');
-        let a = document.createElement('a');
-        a.href = "/members?name="+Json_data[i].id+"&method="+state
-        a.onclick = handleClickUser(Json_data[i].id);
-        if(Json_data[i].username.includes('\t')){
-            Scaled_username = Json_data[i].username.replace('/','');
-        }
-        else{
-            Scaled_username = Json_data[i].username;
-        }
-        let innerText = document.createTextNode(Scaled_username);
-        a.appendChild(innerText);
-        row_2_data_1.appendChild(a);
-        let row_2_data_2 = document.createElement('td');
-        row_2_data_2.innerHTML = Json_data[i].age;
-        let row_2_data_3 = document.createElement('td');
-        row_2_data_3.innerHTML = Json_data[i].Image_flag;
-
-        row_2.appendChild(row_2_data_1);
-        row_2.appendChild(row_2_data_2);
-        row_2.appendChild(row_2_data_3);
-        tbody.appendChild(row_2);
-    }
-    
-    function  handleClickUser(id){
-   
-        console.log(100);
-        return(
-            
-            <Createuser id = {id} sent = {1} />
-            
-        )
-    }
-    
-    document.getElementById('showdata').appendChild(g);
-    document.getElementById('showingData').style.cursor = 'default';
-    let div = document.createElement('div');
-    let button = document.createElement('button');
-    button.innerText = "Go back to list page";
-    button.onclick = ()=>{
-        // this.setState({status: 'default'})
-        document.getElementById('showdata').style = "display:none";
-        document.getElementById('default').style = "display:block";
-        document.getElementById('redirect').style = "display:none";
-    };
-    document.getElementById('showingData').appendChild(button);
-    
-}
 
 export default class List extends Component{
     
@@ -98,6 +13,8 @@ export default class List extends Component{
         this.handleToseelist = this.handleToseelist.bind(this);
         this.handleToseeDefault = this.handleToseeDefault.bind(this);
         this.handleToseeDB = this.handleToseeDB.bind(this);
+        this.showData = this.showData.bind(this);
+        this.handleClickUser = this.handleClickUser.bind(this);
         this.state = {status : 'default', data: null};
     };
 
@@ -119,8 +36,7 @@ export default class List extends Component{
                 this.setState({status: 'text', data:text});
                 
                 const Json_data = JSON.parse(text);
-                showData(this.state.status, text);
-                
+                this.showData(this.state.status, text);
 
             },
             error : ()=>{
@@ -136,7 +52,79 @@ export default class List extends Component{
         document.getElementById('redirect').style = "display:none";
         
     }
-
+    showData(state ,data){
+        const Json_data = JSON.parse(data);
+        try{
+            document.getElementById('showingData').remove();
+            }catch(e){
+            
+            TypeError(e);
+            }
+    
+        let g = document.createElement('div');
+        g.setAttribute("id", "showingData");
+        let table = document.createElement('table');
+        g.appendChild(table);
+        let thead = document.createElement('thead');
+        let tbody = document.createElement('tbody');
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        let row_1 = document.createElement('tr');
+        let heading_1 = document.createElement('th');
+        heading_1.innerHTML = "Username";
+        heading_1.style.textAlign = "center";
+        let heading_2 = document.createElement('th');
+        heading_2.innerHTML = "age";
+        heading_2.style.textAlign = "center";
+        let heading_3 = document.createElement('th');
+        heading_3.innerHTML = "Image Flag";
+        heading_3.setAttribute('style','text-align:center');
+        row_1.appendChild(heading_1);
+        row_1.appendChild(heading_2);
+        row_1.appendChild(heading_3);
+        thead.appendChild(row_1);
+        let Scaled_username = '';
+        for(let i=0; i<Json_data.length; i++){
+            let row_2 = document.createElement('tr');
+            let row_2_data_1 = document.createElement('td');
+            let a = document.createElement('a');
+            a.href = "/members?name="+Json_data[i].id+"&method="+state
+            a.onclick = this.handleClickUser(Json_data[i].id);
+            if(Json_data[i].username.includes('\t')){
+                Scaled_username = Json_data[i].username.replace('/','');
+            }
+            else{
+                Scaled_username = Json_data[i].username;
+            }
+            let innerText = document.createTextNode(Scaled_username);
+            a.appendChild(innerText);
+            row_2_data_1.appendChild(a);
+            let row_2_data_2 = document.createElement('td');
+            row_2_data_2.innerHTML = Json_data[i].age;
+            let row_2_data_3 = document.createElement('td');
+            row_2_data_3.innerHTML = Json_data[i].Image_flag;
+    
+            row_2.appendChild(row_2_data_1);
+            row_2.appendChild(row_2_data_2);
+            row_2.appendChild(row_2_data_3);
+            tbody.appendChild(row_2);
+        }
+        
+        document.getElementById('showdata').appendChild(g);
+        document.getElementById('showingData').style.cursor = 'default';
+        let div = document.createElement('div');
+        let button = document.createElement('button');
+        button.innerText = "Go back to list page";
+        button.onclick = ()=>{
+            // this.setState({status: 'default'})
+            document.getElementById('showdata').style = "display:none";
+            document.getElementById('default').style = "display:block";
+            document.getElementById('redirect').style = "display:none";
+        };
+        document.getElementById('showingData').appendChild(button);
+        
+    }
+      
     handleToseeDB(val){
         
         $.ajax({
@@ -153,13 +141,24 @@ export default class List extends Component{
                 document.getElementById('default').style = "display:none";
                 document.getElementById('redirect').style = "display:block";
                 this.setState({status: 'db', data:db});
-                showData(this.state.status,db);
+                
+                this.showData(this.state.status,db);
             },
             error : ()=>{
                 alert("error!");
             },
         });
     };
+    handleClickUser(id){
+   
+        console.log(100);
+        console.log(id);
+        this.setState({
+            id : id,
+        })
+        console.log(this.state.id);
+    }
+    
     render(){
         
         return (

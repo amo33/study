@@ -116,8 +116,7 @@ export default class Createuser extends Component{
 
     UserInfo(){
         //const issent = props.sent;
-        const issent = this.props.sent;
-        console.log(this.props.id);
+        const issent = this.props.id
         console.log(issent);
         console.log(1);
         if (issent == 1){
@@ -181,7 +180,7 @@ export default class Createuser extends Component{
 
     render() {
         const temp = 1;
-        if(this.props.sent == 1){
+        if(this.state.id == 1){
             this.Showdetail()
         }
         return(

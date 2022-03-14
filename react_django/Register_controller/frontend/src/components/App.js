@@ -9,7 +9,11 @@ export default class App extends Component{
     constructor(props){
         super(props);
         this.handleclickRegister = this.handleclickRegister.bind(this);
+        this.state = {
+          id : 0
+        }
     }
+    
     handleclickRegister(){
 
     }
@@ -24,7 +28,7 @@ export default class App extends Component{
             
               <Routes>
                       <Route path='/list' element={<List/>}></Route> 
-                      <Route path='/members' element={<Createuser/>}></Route>
+                      <Route path='/members' element={<Createuser id = {this.state.id}/>}></Route>
                      
               </Routes>     
             </Router>

@@ -16,14 +16,19 @@ class SpecificView(generics.CreateAPIView):
     def get(self, request, format = None):
         method = request.GET.get('method', None)
         id = request.GET.get('name',None)
-        queryset = USer.objects.filter(id=id)
-        user = []
-        user.append({
-            'user_id' : queryset[0].user_id,
-            'username': queryset[0].username,
-            'age' : queryset[0].age,
-            'image' : str(queryset[0].image), 
-        })
+        if method == 'db':
+            queryset = USer.objects.filter(id=id)
+            user = []
+            user.append({
+                'user_id' : queryset[0].user_id,
+                'username': queryset[0].username,
+                'age' : queryset[0].age,
+                'image' : str(queryset[0].image), 
+            })
+        elif method == 'text':
+            df = pd.read_csv('data.tsv', sep='\t')
+            user = df.query('id = id'
+            )
         print(user)
         # return redirect('/register')
         return Response( json.dumps(user), status = status.HTTP_200_OK)
