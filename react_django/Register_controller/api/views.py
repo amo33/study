@@ -1,12 +1,6 @@
 from random import random
-from unicodedata import category
-from wsgiref.util import request_uri
-from django.http import HttpResponse
-from django.shortcuts import render
-from jinja2 import Undefined
-from numpy import empty
+from django.shortcuts import redirect
 from rest_framework import generics, status
-from sqlalchemy import null 
 from .serializers import Userserializer, createUserSerializer
 from .models import USer
 from rest_framework.views import APIView
@@ -17,7 +11,22 @@ import sqlite3
 connection = sqlite3.connect('db.sqlite3')
 
 # Create your views here. make endpoints 
-
+class SpecificView(generics.CreateAPIView):
+    serializer_class = Userserializer
+    def get(self, request, format = None):
+        method = request.GET.get('method', None)
+        id = request.GET.get('name',None)
+        queryset = USer.objects.filter(id=id)
+        user = []
+        user.append({
+            'user_id' : queryset[0].user_id,
+            'username': queryset[0].username,
+            'age' : queryset[0].age,
+            'image' : str(queryset[0].image), 
+        })
+        print(user)
+        # return redirect('/register')
+        return Response( json.dumps(user), status = status.HTTP_200_OK)
 class Userview(generics.CreateAPIView):
     serializer_class = Userserializer
     def get(self, request, format= None): # list와 데이터베이스가 get방식으로 들어오면 그걸로 query 찾는다.
@@ -64,26 +73,36 @@ class CreateUserView(APIView):
         '''     
         
         serializer = self.serializer_class(data = request.data)
-        print(serializer)
+        print(request.FILES.get('image'))
+        serializer.is_valid()
+        print(serializer.errors) # serializer 오류를 체크 
         if serializer.is_valid(raise_exception= False):
+            
             username = serializer.data.get('username')
             age = serializer.data.get('age')
             print(1)
-            if( request.FILES.get('image') == None):
-                image_exist = 0
-                user = USer(username = username, age = age, Image_flag = image_exist)
-                
-            else:
-                image = request.FILES.get('image')
-                image_exist = 1
-                user = USer(username = username, age = age, image = image, Image_flag = image_exist)
+           
+            image = request.FILES.get('image')
+            image_exist = 1
+            user = USer(username = username, age = age, image = image, Image_flag = image_exist)
                     
             user.save()
             db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)
             db_df.to_csv('data.tsv', index= False, sep='\t')
             
             return Response(Userserializer(user).data, status= status.HTTP_201_CREATED)
+        elif (request.FILES.get('image') == None): 
 
+            username = serializer.data.get('username')
+            age = serializer.data.get('age')
+            image_exist = 0
+            user = USer(username = username, age = age, Image_flag = image_exist)
+            
+            user.save()
+            db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)
+            db_df.to_csv('data.tsv', index= False, sep='\t')
+            
+            return Response(Userserializer(user).data, status= status.HTTP_201_CREATED)
             ''' # this method - 기존 유저 업데이트는 나중에 생각 
             if(queryset == None):
                 user = USer(username = username, age = age, image = image)
