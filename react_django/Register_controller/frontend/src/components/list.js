@@ -1,66 +1,75 @@
-import React, {Component} from "react";
-import { render } from "react-dom";
-import axios from 'axios';
+import React, {useRef, useEffect, useState} from "react";
+import {Redirect} from "react-router-dom";
 import  Typography  from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import { useMemo } from "react";
+import {useTable} from "react-table";
+import { TableHead } from "@material-ui/core";
 
-export default class List extends Component{
+const List=({setid})=>{
     
-    constructor(props){
-        super(props); // it's a rule 
-        this.handleToseelist = this.handleToseelist.bind(this);
-        this.handleToseeDefault = this.handleToseeDefault.bind(this);
-        this.handleToseeDB = this.handleToseeDB.bind(this);
-        this.showData = this.showData.bind(this);
-        this.handleClickUser = this.handleClickUser.bind(this);
-        this.state = {status : 'default', data: null};
-    };
-
-    handleToseelist(val){
-        
-        $.ajax({
-            url : "api/List?category="+val,
-            method : "get",
-            datatype : "JSON",
-            async : true,
-            contentType : false,
-            processData : false,
-            success :  (text)=>{
-                document.getElementById('showdata').style = "display:block";
-                document.getElementById('flag').innerHTML="text"; 
-                document.getElementById('showdata').style.cursor="pointer"; 
-                document.getElementById('default').style = "display:none";
-                document.getElementById('redirect').style = "display:block";
-                this.setState({status: 'text', data:text});
-                
-                const Json_data = JSON.parse(text);
-                this.showData(this.state.status, text);
-
-            },
-            error : ()=>{
-                alert("error!");
-            },
-        });
-    };
+    const [status, setstatus] = useState('default');
+    const [data, setdata] = useState([]);
     
-    handleToseeDefault(){
-        this.setState({status: 'default'})
+    const columndata = 
+         [
+         {
+             accessor: "name",
+             Header: "Name",
+         },
+         {
+             accessor:'age',
+             Header:"Age",
+         },
+         {
+             accessor:'image_flag',
+             Header: 'Image_flag',
+         },
+        ];     
+   // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+   //      useTable( columndata, {data});
+   /*
+    const mounted = useRef(false);
+    
+    useEffect(()=>{
+        if(!mounted.current){
+            mounted.current = true;
+        }
+        else{
+            showData();
+        }
+    },[data, status]);
+*/
+    const handleToseeDefault=()=>{
+        setstatus('default');
         document.getElementById('showdata').style = "display:none";
         document.getElementById('default').style = "display:block";
         document.getElementById('redirect').style = "display:none";
         
     }
-    showData(state ,data){
-        const Json_data = JSON.parse(data);
+    const handledataupdate = (updata) =>{
+        updata.map(x => setdata(...data, x))
+        //setdata({...data, updata});
+    }
+    const onhandlestatus = (state)=>{
+        setstatus({...status,state});
+        console.log(state);
+       
+    }
+
+    function showData(columndata,datum){
+    /*
+        //let Json_data = JSON.parse(data);
+        let Json_data = datum;
         try{
             document.getElementById('showingData').remove();
             }catch(e){
             
             TypeError(e);
             }
-    
+        console.log(Json_data[1].id);
         let g = document.createElement('div');
         g.setAttribute("id", "showingData");
         let table = document.createElement('table');
@@ -87,18 +96,18 @@ export default class List extends Component{
         for(let i=0; i<Json_data.length; i++){
             let row_2 = document.createElement('tr');
             let row_2_data_1 = document.createElement('td');
-            let a = document.createElement('a');
-            a.href = "/members?name="+Json_data[i].id+"&method="+state
-            a.onclick = this.handleClickUser(Json_data[i].id);
+            let name_click = document.createElement('h3');
+          //  a.href = "/members?name="+Json_data[i].id+"&method="+status
+            name_click.onclick = async() =>{handleClickUser(Json_data[i].id);}
+            console.log(Json_data[i].username);
             if(Json_data[i].username.includes('\t')){
                 Scaled_username = Json_data[i].username.replace('/','');
             }
             else{
                 Scaled_username = Json_data[i].username;
             }
-            let innerText = document.createTextNode(Scaled_username);
-            a.appendChild(innerText);
-            row_2_data_1.appendChild(a);
+            name_click.innerHTML = Scaled_username;
+            row_2_data_1.appendChild(name_click);
             let row_2_data_2 = document.createElement('td');
             row_2_data_2.innerHTML = Json_data[i].age;
             let row_2_data_3 = document.createElement('td');
@@ -112,7 +121,36 @@ export default class List extends Component{
         
         document.getElementById('showdata').appendChild(g);
         document.getElementById('showingData').style.cursor = 'default';
-        let div = document.createElement('div');
+    */
+
+           
+        return (
+            <table {...getTableProps()}>
+                <thead>
+                    {headerGroups.map(header=>(
+                         <tr {...header.getHeaderGroupProps()}>
+                         {header.headers.map((column)=>(
+                             <Th {...column.getHeaderProps()}>{column.render('Header')}</Th>
+                         ))}
+                     </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map(user=>{
+                        prepareRow(user)
+                        return(
+                        <tr {...row.getRowProps()}>
+                        {row.cells.map(cell => {
+                          // getCellProps는 각 cell data를 호출해낸다
+                           return <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
+                        })}
+                        </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        );
+        
         let button = document.createElement('button');
         button.innerText = "Go back to list page";
         button.onclick = ()=>{
@@ -125,7 +163,7 @@ export default class List extends Component{
         
     }
       
-    handleToseeDB(val){
+    const handleToseedata=(val)=>{
         
         $.ajax({
             url : "api/List?category="+val,
@@ -134,33 +172,40 @@ export default class List extends Component{
             async : true,
             contentType : false,
             processData : false,
-            success : async (db)=>{
+            success : async (datum)=>{
                 document.getElementById('showdata').style = "display:block";
-                document.getElementById('flag').innerHTML="database";
+                document.getElementById('flag').innerHTML=val;
                 document.getElementById('flag').style.cursor="default"; 
                 document.getElementById('default').style = "display:none";
                 document.getElementById('redirect').style = "display:block";
-                this.setState({status: 'db', data:db});
+                handledataupdate(datum);
+                console.log(1);
+                onhandlestatus(val);
+
+                console.log({data});
                 
-                this.showData(this.state.status,db);
+                
+                
+                const user_list = {data};
+                
+                showData(columndata ,datum);
             },
             error : ()=>{
                 alert("error!");
             },
         });
     };
-    handleClickUser(id){
-   
-        console.log(100);
-        console.log(id);
-        this.setState({
-            id : id,
-        })
-        console.log(this.state.id);
+
+    const handleClickUser=(id)=>{   
+       const navigate = useNavigate();
+
+       console.log({status});
+       console.log(data);
+       setid(id);
+       navigate("members?name"+id+"?method="+{status}, {state : {id:id}});
     }
     
-    render(){
-        
+   
         return (
           <div>
            <div id= "default">
@@ -171,13 +216,13 @@ export default class List extends Component{
                    </Typography>
                </Grid>
                <Grid item xs={8} align="center">
-                   <Button color= 'primary' variant="contained" value= {'showdb'} onClick={() => this.handleToseeDB('showdb')}>
+                   <Button color= 'primary' variant="contained" value= {'showdb'} onClick={() => handleToseedata('showdb')}>
                        <Link to = '/list?category=showdb'>show me Database</Link>
                    </Button>
                </Grid>
                <Grid item xs={8} align="center">
                    
-                   <Button color= 'secondary' variant="contained" value={'showlist'} onClick={() => this.handleToseelist('showlist')}>
+                   <Button color= 'secondary' variant="contained" value={'showlist'} onClick={() => handleToseedata('showlist')}>
                    <Link to = '/list?category=showlist'>show me list </Link>
                    </Button>
                    
@@ -200,5 +245,7 @@ export default class List extends Component{
                </div>
          </div>
         );
-    }
+    
 }
+
+export default List

@@ -3,21 +3,11 @@ import {render} from "react-dom";
 import Createuser from "./Createuser";
 import { BrowserRouter as Router, Routes, Route, Link, Redirect} from "react-router-dom";
 import List from "./list";
+import { useState } from "react";
+const App = () =>{
 
-export default class App extends Component{
-
-    constructor(props){
-        super(props);
-        this.handleclickRegister = this.handleclickRegister.bind(this);
-        this.state = {
-          id : 0
-        }
-    }
+    const [userid, setid] = useState(0);
     
-    handleclickRegister(){
-
-    }
-    render(){
         return (
           <div id = "start">
             
@@ -27,14 +17,14 @@ export default class App extends Component{
             <h3> <a href = '/list' >If you want to see userinfo click here</a></h3>
             
               <Routes>
-                      <Route path='/list' element={<List/>}></Route> 
-                      <Route path='/members' element={<Createuser id = {this.state.id}/>}></Route>
-                     
+        
+                      <Route path='/members' element={<Createuser userid = {userid}/>}></Route>
+                      <Route path='/list' element={<List setid= {setid} />}></Route> 
               </Routes>     
             </Router>
           </div>
         );
-  }
+  
 }
 
 const appDiv = document.getElementById('app');

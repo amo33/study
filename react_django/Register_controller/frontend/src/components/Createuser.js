@@ -4,42 +4,23 @@ import  Typography  from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
-export default class Createuser extends Component{
+function Createuser({userid}){
    
-    constructor(props){
-        super(props);
-    
-        this.state = {
-            name : "",
-            age : 0,
-            image : null,
-        };
-       
-        this.handleregisterButtonPressed = this.handleregisterButtonPressed.bind(this);
-        this.handleimageuploaded = this.handleimageuploaded.bind(this);
-        this.handleUseragechange = this.handleUseragechange.bind(this);
-        this.handleUsernametyped = this.handleUsernametyped.bind(this);
-        this.handleDetailUser = this.handleDetailUser.bind(this);
-        this.UserInfoSent = this.UserInfoSent.bind(this);
-        this.UserInfo = this.UserInfo.bind(this);
-        this.UserRegistration = this.UserRegistration.bind(this);
-        this.Showdetail = this.Showdetail.bind(this)
+    const [name, setname] = useState('');
+    const [age, setage] = useState(0);
+    const [image, setimage] = useState(null);
+   
+    const handleUsernametyped = (e)=>{
+       const name = e.target.value; 
+       setname(name);
+    }
+    const handleimageuploaded = (e)=>{
+        setimage(e.target.files[0])
     }
 
-    handleUsernametyped(e){
-        this.setState({
-            name : e.target.value,
-        })
-    }
-    handleimageuploaded(e){
-
-        this.setState({
-            image : this.target.files[0],
-        });
-    }
-
-    handleUseragechange(e){
+    const handleUseragechange=(e)=>{
         let num = e.target.value || 0;
         if(!isFinite(num)) return 
         num = num.toString()
@@ -48,17 +29,15 @@ export default class Createuser extends Component{
             num = num.replace(/^0+/,'')
         }
 
-        this.setState({
-            age : e.target.value,
-        })
+        setage(num);
     }
 
-    handleDetailUser(props){
-        console.log(this.state.sent);
-        if(this.state.sent != ' '){
+    const handleDetailUser=()=>{
+        
+        if({id} != 0){
             this.UserInfoSent();
             $.ajax({
-                url : "api/detail?user_id="+this.state.sent,
+                url : "api/detail?user_id="+{id},
                 method : "get",
                 async : true,
                 contentType : false,
@@ -78,16 +57,18 @@ export default class Createuser extends Component{
 
     }
 
-    UserInfoSent(){
+    const UserInfoSent= () =>{
         document.getElementById('register').style = "display:none";
 
     }
 
-    handleregisterButtonPressed(){
+    const handleregisterButtonPressed=()=>{
         let datum = new FormData();
-        datum.append("username", this.state.name);
-        datum.append("age", this.state.age);
-        datum.append("image", this.state.image);
+        console.log(name);
+        console.log({age});
+        datum.append("username", name);
+        datum.append("age", age);
+        datum.append("image", image);
         for (var key of datum.entries()) {
             console.log(key[0] + ', ' + key[1]);
         }
@@ -114,19 +95,18 @@ export default class Createuser extends Component{
         
     }
 
-    UserInfo(){
+    const UserInfo=()=>{
         //const issent = props.sent;
-        const issent = this.props.id
-        console.log(issent);
+       
         console.log(1);
-        if (issent == 1){
+        if ({userid}== 1){
             console.log(1);
-            return this.Showdetail();
+            return Showdetail();
         }
-        return this.UserRegistration();
+        return UserRegistration();
     }
 
-    UserRegistration (){
+    const UserRegistration=()=>{
         return (
             
             <div id = "Register">
@@ -137,11 +117,11 @@ export default class Createuser extends Component{
                         </Typography>    
                     </Grid>
                     <Grid item xs ={12} align="center">
-                        <input type = "text" onChange={this.handleUsernametyped} value= {this.state.name} />
+                        <input type = "text" onChange={handleUsernametyped} value= {name} />
                     </Grid>
                     <Grid item xs ={12} align="center">
                                     
-                        <input type= "number" onChange= {this.handleUseragechange} value = {this.state.age} />
+                        <input type= "number" onChange= {handleUseragechange} value = {age} />
                             
                             
                     </Grid>
@@ -149,12 +129,12 @@ export default class Createuser extends Component{
                         <input type='file' 
                             accept='image/jpg,impge/png,image/jpeg,image/gif' 
                             name='profile_img' 
-                            onChange={this.handleimageuploaded} > 
+                            onChange={handleimageuploaded} > 
                         </input>
                     </Grid>
                     
                     <Grid item xs={12} align="center">
-                        <Button color= 'primary' variant="contained" onClick={this.handleregisterButtonPressed}>
+                        <Button color= 'primary' variant="contained" onClick={handleregisterButtonPressed}>
                             Register user 
                         </Button>
                     </Grid>
@@ -169,25 +149,26 @@ export default class Createuser extends Component{
         );
     }
 
-    Showdetail(){
+    const Showdetail=()=>{
         return (
             <div id= "detail">
                 <h1>Test</h1>
-                <h4>{this.props.id}</h4>
+                <h4>{id}</h4>
             </div>
         );
     }
 
-    render() {
-        const temp = 1;
-        if(this.state.id == 1){
-            this.Showdetail()
-        }
-        return(
-            this.UserInfo()
-        );
-        
+    const temp = {userid};
+    console.log(temp);
+    if(temp == 0){
+        return Showdetail()
     }
+    return(
+        UserInfo()
+    );
+        
+    
         
     
 }
+export default Createuser

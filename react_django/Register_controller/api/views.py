@@ -27,8 +27,7 @@ class SpecificView(generics.CreateAPIView):
             })
         elif method == 'text':
             df = pd.read_csv('data.tsv', sep='\t')
-            user = df.query('id = id'
-            )
+            user = df.query('id = id')
         print(user)
         # return redirect('/register')
         return Response( json.dumps(user), status = status.HTTP_200_OK)
@@ -47,14 +46,16 @@ class Userview(generics.CreateAPIView):
                     "Image_flag" : element.Image_flag
                 })
             print(user)
-            return Response(json.dumps(user) , status=status.HTTP_200_OK)
+            return Response(user , status=status.HTTP_200_OK)
         elif category == 'showlist':
             df = pd.read_csv('data.tsv', sep='\t')
             df_copy = df.copy()
             df_copy.drop(['image', 'user_id'], inplace= True, axis = 1)
             print(df_copy)
-            user = df_copy.to_json(orient='records')
+            user = df_copy.to_dict('records')
             print(user)
+            #user = df_copy.to_json(orient='records')
+            #print(user)
             return Response(user, status = status.HTTP_200_OK)
         else: 
             return Response({'No request': 'Invalid parameter'}, status= status.HTTP_204_NO_CONTENT)
