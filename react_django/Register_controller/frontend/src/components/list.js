@@ -1,13 +1,12 @@
-import React, {useRef, useEffect, useState} from "react";
+import React, {useRef, useEffect, useMemo ,useState} from "react";
 import {Redirect} from "react-router-dom";
 import  Typography  from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {Link,useNavigate} from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import { useMemo } from "react";
 import {useTable} from "react-table";
 import { TableHead } from "@material-ui/core";
-
+import ReactDOM from 'react-dom'; 
 const List=({setid})=>{
     
     const [status, setstatus] = useState('default');
@@ -28,20 +27,14 @@ const List=({setid})=>{
              Header: 'Image_flag',
          },
         ];     
-   // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-   //      useTable( columndata, {data});
-   /*
-    const mounted = useRef(false);
+    const columns = useMemo(() => columndata, []);
+    const userdata = useMemo(()=>{data} , []);
     
     useEffect(()=>{
-        if(!mounted.current){
-            mounted.current = true;
-        }
-        else{
-            showData();
-        }
+        //showData(columns, userdata);
+        
     },[data, status]);
-*/
+
     const handleToseeDefault=()=>{
         setstatus('default');
         document.getElementById('showdata').style = "display:none";
@@ -50,17 +43,48 @@ const List=({setid})=>{
         
     }
     const handledataupdate = (updata) =>{
-        updata.map(x => setdata(...data, x))
+        {(updata) && updata.map(x => setdata(data => [...data, x]))}
         //setdata({...data, updata});
     }
+
     const onhandlestatus = (state)=>{
         setstatus({...status,state});
         console.log(state);
        
     }
+    function ShowData(props){
+        return (
+            <table>
+                <thead>
+                    <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Image_Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                
+                    {props.userdata.map((val, key) => {
+                    return (
+                        <tr key={key}>
+                        <td>{val.username}</td>
+                        <td>{val.age}</td>
+                        <td>{val.Image_flag}</td>
+                        </tr>
+                
+          )
+        })}
+        </tbody>
+      </table>
 
-    function showData(columndata,datum){
+        )
+    }
     /*
+    const showData=(columndata,datum)=>{
+        const testData = useMemo(()=> datum, []);
+        const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+        useTable( {columndata, data : testData});
+    
         //let Json_data = JSON.parse(data);
         let Json_data = datum;
         try{
@@ -122,8 +146,7 @@ const List=({setid})=>{
         document.getElementById('showdata').appendChild(g);
         document.getElementById('showingData').style.cursor = 'default';
     */
-
-           
+    /*  
         return (
             <table {...getTableProps()}>
                 <thead>
@@ -150,7 +173,8 @@ const List=({setid})=>{
                 </tbody>
             </table>
         );
-        
+        */
+       /*
         let button = document.createElement('button');
         button.innerText = "Go back to list page";
         button.onclick = ()=>{
@@ -162,7 +186,7 @@ const List=({setid})=>{
         document.getElementById('showingData').appendChild(button);
         
     }
-      
+     */ 
     const handleToseedata=(val)=>{
         
         $.ajax({
@@ -183,12 +207,12 @@ const List=({setid})=>{
                 onhandlestatus(val);
 
                 console.log({data});
-                
-                
-                
-                const user_list = {data};
-                
-                showData(columndata ,datum);
+                const element = <ShowData userdata = {datum} />;
+                ReactDOM.render(
+                    element,
+                    document.getElementById('showingData')
+                  );
+                console.log(data);
             },
             error : ()=>{
                 alert("error!");
@@ -231,10 +255,11 @@ const List=({setid})=>{
            
            </div>
            <div id="showdata">
-               <div id= "showingData"></div>
-               <div id= "redirect">
-                <h2 id= 'flag'></h2>
+                <div id= "redirect">
+                    <h2 id= 'flag'></h2>
                </div>
+               <div id= "showingData"></div>
+               
                
            </div>
 
