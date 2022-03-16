@@ -23,8 +23,6 @@ function ShowDetail(props){
                         <td>{val.age}</td>
                         <td>{val.user_id}</td>
                         <td><img src= {require(val.image_path).default}/></td>
-                        
-                        
                         </tr>
         )
         })}
