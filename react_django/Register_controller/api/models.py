@@ -27,5 +27,6 @@ class USer(models.Model):
     user_id = models.CharField(max_length=50, unique= True, default=generate_unique_code)
     username = models.CharField(max_length=20)
     age = models.IntegerField()
+    image_path = models.TextField(blank=True, null = True, default= " ")
     image = models.ImageField(blank = True, null = True  , upload_to = "images")
     Image_flag = models.IntegerField()

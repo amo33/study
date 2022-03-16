@@ -5,8 +5,6 @@ import { BrowserRouter as Router, Routes, Route, Link, Redirect} from "react-rou
 import List from "./list";
 import { useState } from "react";
 const App = () =>{
-
-    const [userid, setid] = useState(0);
     
         return (
           <div id = "start">
@@ -17,9 +15,10 @@ const App = () =>{
             <h3> <a href = '/list' >If you want to see userinfo click here</a></h3>
             
               <Routes>
-        
-                      <Route path='/members' element={<Createuser userid = {userid}/>}></Route>
-                      <Route path='/list' element={<List setid= {setid} />}></Route> 
+                
+                      <Route path='/members' element={<Createuser/>}></Route>
+                      <Route path='/members/:userid/:method' element={<Createuser/>}></Route>
+                      <Route path='/list' element={<List />}></Route> 
               </Routes>     
             </Router>
           </div>

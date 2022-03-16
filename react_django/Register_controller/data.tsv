@@ -1,20 +1,7 @@
-id	user_id	username	age	Image_flag	image
-1	519225	tim	21	1	
-2	320411	tim	21	1	images/0_RqQQgVa.jpeg
-3	610283	tim	21	1	images/3_HIiwPeI.jpeg
-4	600053	jake	32	1	images/0_DKpWUQR.jpeg
-5	841655	timmy	33	0	
-6	218422	john	33	0	
-7	314478	john	33	0	
-8	900021	Lee	12	1	images/-1_fTE9cij.jpeg
-9	720372	Lee,%$	12	1	images/-1_LjsWhIf.jpeg
-10	346223	Lee\t	12	1	images/-1_gDAh3vx.jpeg
-11	587214	hjhj	5	0	
-12	103947	hjhj	5	0	
-13	120705	hjhj	21	0	
-14	786771	hjhj	21	0	
-15	429012	mea	32	0	
-16	217845	jim	44	0	
-17	759362	tom	32	0	
-18	273094	kim	33	0	
-19	200456	jake	23	0	
+id	user_id	username	age	image_path	image	Image_flag
+1	627705	tim	40	 		0
+2	454095	john	34	media/images/thumbnailed/-1.jpeg	images/-1_JSNziV0.jpeg	1
+3	748607	kain	33	/Users/ihyeonjun/study/react_django/Register_controller/media/images/thumbnailed/0.jpeg	images/0_2u4N6TF.jpeg	1
+4	118856	amy	34	media/images/thumbnailed/0.jpeg	images/0_RwuyWUy.jpeg	1
+5	532908	tom	55	./media/images/thumbnailed/0.jpeg	images/0_LFoETFI.jpeg	1
+6	739243	jake	30	media/images/thumbnailed/0.jpeg	images/0_B7U95IG.jpeg	1

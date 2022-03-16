@@ -1,13 +1,17 @@
+from dataclasses import replace
 from random import random
 from django.shortcuts import redirect
 from rest_framework import generics, status
+from sqlalchemy import true
 from .serializers import Userserializer, createUserSerializer
 from .models import USer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
+from pathlib import Path
 import pandas as pd 
 import sqlite3 
+from PIL import Image
 connection = sqlite3.connect('db.sqlite3')
 
 # Create your views here. make endpoints 
@@ -15,22 +19,31 @@ class SpecificView(generics.CreateAPIView):
     serializer_class = Userserializer
     def get(self, request, format = None):
         method = request.GET.get('method', None)
-        id = request.GET.get('name',None)
-        if method == 'db':
+        id = request.GET.get('user_id',None)
+        
+        user = []
+        if method == 'showdb':
             queryset = USer.objects.filter(id=id)
-            user = []
+
             user.append({
-                'user_id' : queryset[0].user_id,
-                'username': queryset[0].username,
-                'age' : queryset[0].age,
-                'image' : str(queryset[0].image), 
+                "user_id" : queryset[0].user_id,
+                "username": queryset[0].username,
+                "age" : queryset[0].age,
+                "image_path" : queryset[0].image_path, 
             })
-        elif method == 'text':
+        elif method == 'showlist':
             df = pd.read_csv('data.tsv', sep='\t')
-            user = df.query('id = id')
-        print(user)
-        # return redirect('/register')
-        return Response( json.dumps(user), status = status.HTTP_200_OK)
+            df_copy = df.copy()
+            df_copy.fillna('0', inplace=True)
+            user.append({
+                "user_id" : df_copy.iloc[int(id)-1]['user_id'],
+                "username": df_copy.iloc[int(id)-1]['username'],
+                "age":df_copy.iloc[int(id)-1]['age'],
+                "image_path":df_copy.iloc[int(id)-1]['image_path'],
+            })
+           
+        return Response( user, status = status.HTTP_200_OK)
+
 class Userview(generics.CreateAPIView):
     serializer_class = Userserializer
     def get(self, request, format= None): # list와 데이터베이스가 get방식으로 들어오면 그걸로 query 찾는다.
@@ -45,17 +58,15 @@ class Userview(generics.CreateAPIView):
                     "age": element.age,
                     "Image_flag" : element.Image_flag
                 })
-            print(user)
+           
             return Response(user , status=status.HTTP_200_OK)
         elif category == 'showlist':
             df = pd.read_csv('data.tsv', sep='\t')
             df_copy = df.copy()
-            df_copy.drop(['image', 'user_id'], inplace= True, axis = 1)
-            print(df_copy)
+           
+            df_copy.fillna('0', inplace=True)
             user = df_copy.to_dict('records')
-            print(user)
-            #user = df_copy.to_json(orient='records')
-            #print(user)
+            
             return Response(user, status = status.HTTP_200_OK)
         else: 
             return Response({'No request': 'Invalid parameter'}, status= status.HTTP_204_NO_CONTENT)
@@ -64,33 +75,25 @@ class CreateUserView(APIView):
     serializer_class = createUserSerializer
     def post(self, request, format = None):
         cursor = sqlite3.connect('db.sqlite3', isolation_level=None, detect_types = sqlite3.PARSE_COLNAMES) 
-        print(1)
-        print(request.FILES.get('image'))
-        print(1)
-        '''
-        user_id = request.data['user_id']
-        if len(user_id) != 6:
-            queryset = None
-        elif USer.objects.filter(user_id = user_id):
-            queryset = USer.objects.filter(user_id = user_id)
-            print(queryset[0])
-        else:
-            queryset = None
-        '''     
         
         serializer = self.serializer_class(data = request.data)
-        print(request.FILES.get('image'))
-        serializer.is_valid()
-        print(serializer.errors) # serializer 오류를 체크 
-        if serializer.is_valid(raise_exception= False):
+
+ 
+        if serializer.is_valid():
             
             username = serializer.data.get('username')
             age = serializer.data.get('age')
-            print(1)
+            
            
             image = request.FILES.get('image')
+            image_for_thumb = Image.open(image)
+            size = (128, 128)
+            image_for_thumb.thumbnail(size)
+            image_path = "media/images/thumbnailed/"+str(image)
+            image_for_thumb.save(Path(image_path))
+            
             image_exist = 1
-            user = USer(username = username, age = age, image = image, Image_flag = image_exist)
+            user = USer(username = username, age = age, image = image, image_path = image_path, Image_flag = image_exist)
                     
             user.save()
             db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)
@@ -102,48 +105,12 @@ class CreateUserView(APIView):
             username = serializer.data.get('username')
             age = serializer.data.get('age')
             image_exist = 0
-            user = USer(username = username, age = age, Image_flag = image_exist)
+            user = USer(username = username, age = age, Image_flag = image_exist, image_path = ' ')
             
             user.save()
             db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)
             db_df.to_csv('data.tsv', index= False, sep='\t')
             
             return Response(Userserializer(user).data, status= status.HTTP_201_CREATED)
-            ''' # this method - 기존 유저 업데이트는 나중에 생각 
-            if(queryset == None):
-                user = USer(username = username, age = age, image = image)
-                user.save()
-                db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)
-                db_df.to_csv('data.tsv', index= False, sep='\t')
-                return Response(Userserializer(user).data, status= status.HTTP_201_CREATED)
-            elif(queryset.exists()):
-                user = queryset[0]
-                print(user)
-                user.age = age
-                user.image = image
-                user.save(update_fields = ['age', 'image'])
-                df = pd.read_csv('data.tsv', index = False ,sep= '\t')
-                df.loc[df.iloc[df['user_id'] == user_id], 'age'] = age  
-                df.loc[df.iloc[df['user_id'] == user_id], 'image'] = image
-
-                # 이건 파일 저장 잘못된 방법 
-                with open('data.txt', 'r', encoding='utf-8') as txtfile: 
-                    lines =  txtfile.read()
-                    newlist  = re.split(', |\n', lines)
-                    id_list = newlist[0::4]
-                    newlist[id_list.index(user.user_id)*4+2] = str(user.age)
-                    newlist[id_list.index(user.user_id)*4+3] = str(user.image)
-                    txtfile.close()
-                with open('data.txt', 'w', encoding='utf-8') as txtfile: 
-                    pass
-                with open('data.txt', 'w', encoding='utf-8') as txtfile: 
-                    count = 1
-                    for element in newlist:
-                        if(count % 4 == 0):
-                            txtfile.write(element +'\n')
-                        else:
-                            txtfile.write(element + ', ')
-                        count +=1
-                    txtfile.close()'''
 
         return Response({'Bad Request': 'Invalid data...'}, status= status.HTTP_400_BAD_REQUEST)
