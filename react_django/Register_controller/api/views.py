@@ -89,8 +89,8 @@ class CreateUserView(APIView):
             image_for_thumb = Image.open(image)
             size = (128, 128)
             image_for_thumb.thumbnail(size)
-            image_path = "media/images/thumbnailed/"+str(image)
-            image_for_thumb.save(Path(image_path))
+            image_path = "/thumbnailed/"+str(image)
+            image_for_thumb.save(Path('user_register/public'+image_path))
             
             image_exist = 1
             user = USer(username = username, age = age, image = image, image_path = image_path, Image_flag = image_exist)
