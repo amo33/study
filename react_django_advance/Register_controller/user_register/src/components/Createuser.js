@@ -15,12 +15,19 @@ function Createuser(){
     const [image, setimage] = useState(null);
     const [Incomedata, setIncomedata] = useState([])
     const {userid} = useParams();
-    const [idchanged, setidchanged] = useState(0);
     const {method} = useParams();
     const handleUsernametyped = (e)=>{ // name updated
-      
-        const name = e.target.value; 
-        setname(name);
+        let regExp = /[ \{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\ '\"\\(\=]/gi;
+        let name = e.target.value; 
+        name = name.replace(regExp, "")
+        if(name.length==0){
+            alert('No name entered!');
+            return UserRegistration();
+        }
+        else{
+            setname(name);
+        }
+        
     }
     const handleimageuploaded = (e)=>{ // image updated
         setimage(e.target.files[0])
@@ -28,8 +35,12 @@ function Createuser(){
     const IncomeFromBack = (val)=>{  // if detail user is required.. 
         setIncomedata([...val])
     }
+    // 나이 마이너스 
     const handleUseragechange=(e)=>{ //age change
         let num = e.target.value || 0;
+        if (num <0){
+            num = 0;
+        }
         if(!isFinite(num)) return 
         num = num.toString()
 
@@ -39,9 +50,7 @@ function Createuser(){
 
         setage(num);
     }
-    useEffect(()=>{ // check if we get userid then update 
-        setidchanged(userid)
-    },[])
+
     useEffect(()=>{ // if userid changed . get data
         axios.get('http://127.0.0.1:3000/api/detail?user_id='+userid+'&method='+method)
                 .then((Response)=>
@@ -51,21 +60,20 @@ function Createuser(){
                 .catch((Error)=>{console.log(Error)})
                        
     },[userid]);
-    const handleregisterButtonPressed=()=>{
+
+    const handleregisterButtonPressed=()=>{ // 사용자 등록
         let datum = new FormData();
         datum.append("username", name);
         datum.append("age", age);
         datum.append("image", image);
 
-        axios.post("api/create-user", datum, {headers: { "Content-Type": "multipart/form-data"}}
-    ).then((response) => {alert(response.data['username'] + ' register success')})
-    .catch((Error)=>{alert(Error)});
-    
+        axios.post("api/create-user", datum, {headers: { "Content-Type": "multipart/form-data"}})
+        .then((response) => {alert(response.data['username'] + ' register success')})
+        .catch((Error)=>{alert(Error)});
     }
+    // 이름만 공백 . 
+    const UserRegistration=()=>{ // 사용자 등록시 페이지
 
-    const UserRegistration=()=>{
-
-        
             return (
             
                 <div id = "Register">
@@ -105,16 +113,9 @@ function Createuser(){
                 </div>
             );
     }
-   if(userid!== undefined){
-    return(
-        
-        <div><ShowDetail data = {Incomedata} state = {userid} methods= {method}/></div>
-        
-    )
-   } 
-   else{
-       return UserRegistration();
-   }
-   
+
+   return (
+       userid !== undefined ? <div><ShowDetail data = {Incomedata} state = {userid} method= {method}/></div> : UserRegistration()
+   );
 }
 export default Createuser

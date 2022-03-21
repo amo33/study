@@ -1,7 +1,7 @@
-import React, {useRef, useEffect, useMemo ,useState} from "react";
+import React, {useState} from "react";
 import  Typography  from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import {Link,useNavigate} from "react-router-dom";
+import {Link,} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import ShowData from "./table.js";
 import axios from "axios";
@@ -9,13 +9,15 @@ import axios from "axios";
 const List=()=>{
     const [status, setstatus] = useState('default');
     const [data, setdata] = useState([]);
-    const handledataupdate = (updata) =>{
+
+    const handledataupdate = (updata) =>{ //data 업데이트
         setdata([...updata]);
     }
     
     const onhandlestatus = (state)=>{ // 목록페이지 중 txt or db 중으로 볼지 업데이트 
         setstatus(state);
     }
+    
     const handleToseedata=(val)=>{ //tsv or db 보고 싶으면.
         axios.get('api/List?category='+val)
       .then(response => {
@@ -24,7 +26,7 @@ const List=()=>{
         })
       .catch((Error)=>{alert(Error)});
     };
-    const choosemethod=()=>{
+    const defaultpage=()=>{
         return (
             <div>
                 <div id= "default">
@@ -57,12 +59,9 @@ const List=()=>{
              </div>
         );
     }   
-        if(status === 'default'){
-           return choosemethod();
-        }
-        else{
-            return <div id= "showingData"><ShowData userdata = {data} method = {status} /></div>;
-        }
+
+    return (status === 'default' ? defaultpage() : <div id= "showingData"><ShowData userdata = {data} method = {status} /></div>);
+        
 }
 
 export default List

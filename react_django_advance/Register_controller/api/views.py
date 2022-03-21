@@ -44,7 +44,7 @@ class SpecificView(generics.CreateAPIView):
            
         return Response( user, status = status.HTTP_200_OK)
 
-class Userview(generics.CreateAPIView):
+class Userview(generics.CreateAPIView): ##### list. -> view /
     serializer_class = Userserializer
     def get(self, request, format= None): # list와 데이터베이스가 get방식으로 들어오면 그걸로 query 찾는다.
         category = request.GET.get('category', None)
@@ -104,7 +104,7 @@ class CreateUserView(APIView):
             username = serializer.data.get('username')
             age = serializer.data.get('age')
             image_exist = 0
-            user = USer(username = username, age = age, Image_flag = image_exist, image_path = ' ')
+            user = USer(username = username, age = age, Image_flag = image_exist, image_path = ' ') ### ### 
             
             user.save()
             db_df = pd.read_sql_query('SELECT * FROM api_user', cursor)

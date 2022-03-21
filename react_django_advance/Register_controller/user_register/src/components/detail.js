@@ -1,24 +1,8 @@
-import React, { Component} from "react";
-import { useState } from "react";
-import axios from "axios";
-/*
-const Getimage = () =>{
-    axios.get('http://127.0.0.1:3000/api/detail?user_id='+props.state+'&method='+props.methods)
-    .then((Response) =>{
-        handleimgpath(Response.data)
-    })
-    .catch((Error)=>{
-        console.log(Error);
-    })
-}
-const handleimgpath = (val) =>{
-    setimgpath([...val])
-}
-*/
-function ShowDetail(props){
-    // const [img_path, setimgpath] = useState(''); 
+import React from "react";
 
-    if(props.state != 0 && props.state!= undefined){
+function ShowDetail(props){
+
+    if(props.state !== 0 && props.state!== undefined){
         return (
             <div>
                 <h4>{props.method}</h4>
@@ -39,7 +23,7 @@ function ShowDetail(props){
                         <td>{val.username}</td>
                         <td>{val.age}</td>
                         <td>{val.user_id}</td>
-                        <td><img src= {process.env.PUBLIC_URL+val.image_path}/></td>
+                        <td><img src= {process.env.PUBLIC_URL+val.image_path} alt="No Image Registered"/></td>
                         </tr>
         )
         })}

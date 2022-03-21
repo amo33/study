@@ -7,6 +7,7 @@ function ShowData(props){
     if(props.method != 'default'){
         return (
             <div>
+                <h4>{props.method}</h4>
             <table>
                 <thead>
                     <tr>
@@ -34,7 +35,7 @@ function ShowData(props){
                <Link to = '/'>Go to start page </Link>
                </Button>
             </div>
-    </div>
+        </div>
         );
     
     }
