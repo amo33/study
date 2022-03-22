@@ -115,7 +115,7 @@ function Createuser(){
     }
 
    return (
-       userid !== undefined ? <div><ShowDetail data = {Incomedata} state = {userid} method= {method}/></div> : UserRegistration()
+       userid !== undefined ? <div><ShowDetail userdata = {Incomedata} state = {userid} method= {method}/></div> : UserRegistration()
    );
 }
 export default Createuser
