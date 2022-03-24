@@ -1,22 +1,20 @@
-import React, { Component} from "react";
+import React from "react";
 import {Link} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 function ShowData(props){
-    const status = props.method;
-    console.log(props.userdata[0].image_path);
-    console.log(props.userdata[0].Image_flag);
-    if(props.method != 'default'){
+    
+    if((props.method !== 'default')){
         return (
             <div>
-                <h4>{props.method}</h4>
+                <div><h4>{props.method}</h4></div>
             <table>
                 <thead>
-                    <tr>
+                    <tr> 
                     <th>Name</th>
                     <th>Age</th>
-                    {(props.userdata[0].image_path !== ' ' || props.userdata[0].image_path) === undefined && <th>user_id</th>}
-                    {(props.userdata[0].image_path === ' ' || props.userdata[0].image_path === undefined )&& <th>Image_Flag</th>}
-                    {(props.userdata[0].image_path !== ' ' || props.userdata[0].image_path) === undefined && <th>Image path</th>}
+                    {(props.status === 'detail') ? <th>user_id</th> : null}
+                    {(props.status === 'list') ? <th>Image_Flag</th> : null}
+                    {(props.status === 'detail') ? <th>Image path</th> : null}
                     </tr>
                 </thead>
                 <tbody>
@@ -24,15 +22,15 @@ function ShowData(props){
                     {props.userdata.map((val, key) => {
                     return (
                         <tr key={key}>
-                        {(props.userdata[0].image_path === ' ' || props.userdata[0].image_path === undefined) && <td> <Link to = {'/members/'+ val.id + '/'+ status}>{val.username}</Link></td>}
-                        {(props.userdata[0].image_path !== ' '|| props.userdata[0].image_path === undefined) && <td>{val.username}</td>}
+                        {(props.status === 'list') ? <td> <Link to = {'/members/'+ val.id + '/'+ props.method}>{val.username}</Link></td> : null}
+                        {(props.status === 'detail') ? <td>{val.username}</td> : null}
                         <td>{val.age}</td>
-                        {(props.userdata[0].image_path !== ' '|| props.userdata[0].image_path !== undefined)  && <td>{val.user_id}</td>}
-                        {(props.userdata[0].image_path === ' '|| props.userdata[0].image_path === undefined) && <td>{val.Image_flag}</td>}
-                        {(props.userdata[0].image_path !== ' ' || props.userdata[0].image_path !== undefined) && <td><img src= {process.env.PUBLIC_URL+val.image_path} alt="No Image Registered"/></td>}
+                        {(props.status === 'detail')? <td>{val.user_id}</td> : null}
+                        {(props.status === 'list') ?<td>{val.Image_flag}</td>: null}
+                        {(props.status === 'list') ? null :
+                         (props.status === 'detail' && (val.image_path != '0' && val.image_path != undefined)) ? <td><img src= {process.env.PUBLIC_URL+val.image_path}/></td> : <td>No Image</td>}
                         
                         </tr>
-            
             )}
             )}
                 </tbody>
@@ -45,6 +43,9 @@ function ShowData(props){
         </div>
         );
     
+    }
+    else{
+        return null;
     }
 }
 

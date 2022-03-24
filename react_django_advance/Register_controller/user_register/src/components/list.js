@@ -19,7 +19,7 @@ const List=()=>{
     }
     
     const handleToseedata=(val)=>{ //tsv or db 보고 싶으면.
-        axios.get('api/List?category='+val)
+        axios.get('api/List?method='+val)
       .then(response => {
           handledataupdate(response.data);
           onhandlestatus(val);
@@ -60,7 +60,7 @@ const List=()=>{
         );
     }   
 
-    return (status === 'default' ? defaultpage() : <div id= "showingData"><ShowData userdata = {data} method = {status} /></div>);
+    return (status === 'default' ? defaultpage() : <div id= "showingData"><ShowData userdata = {data} method = {status} status = "list"/></div>);
         
 }
 
