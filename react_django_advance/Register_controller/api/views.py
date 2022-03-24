@@ -71,15 +71,16 @@ class Userview(generics.CreateAPIView, APIView):
                 user = df_copy.to_dict('records')
             elif id != None:
                 print(id)
-                
+                print(type(id))
+                print(type(df_copy['id']))
                 user = []
-                print(df_copy['id'])
-                print(df_copy.loc[df['id'] == str(id)])
+                idx =df_copy.index[df_copy['id'].equals(id)].tolist()
+                print(idx)
                 user.append({
-                     "user_id" : df_copy[df_copy['id'] == str(id)]['user_id'],
-                     "username": df_copy[df_copy['id'] == str(id)]['username'],
-                     "age":df_copy[df_copy['id'] == id]['age'],
-                     "image_path":df_copy[df_copy['id'] == id]['image_path'],
+                     "user_id" : df_copy[idx, 'user_id'],
+                     "username": df_copy[idx, 'username'],
+                     "age":df_copy[idx, 'age'],
+                     "image_path":df_copy[idx , 'image_path'],
                  })
             return Response(user, status = status.HTTP_200_OK)
         else: 
