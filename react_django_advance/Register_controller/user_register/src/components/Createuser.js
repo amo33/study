@@ -34,24 +34,28 @@ function Createuser(){
     const IncomeFromBack = (val)=>{  // if detail page user is required.. 
         setIncomedata([...val])
     }
-    // 나이 마이너스 해결
+    
     const handleUseragechange=(e)=>{ //age change
-        let num = e.target.value || 0;
+        let num = e.target.value.replace(/\+-./g, '');
         if (num <=0){
+            alert('0 Entered!')
             num = 1;
         }
         if(!isFinite(num)) return
-        num = num.replace(/[^0-9]/g,'') 
-        //num = num.toString()
+        num = num.toString()
+        if (num !== '0' && !num.includes('.')){
+            num = num.replace(/^0+/,'')
+            setage(num);
+        }
+        else{
+            alert('Not allowed value');
 
-        //if (num !== '0' && !num.includes(',')){
-        //    num = num.replace(/^0+/,'')
-        //}
-        setage(num);
+        }
+        
     }
 
     useEffect(()=>{ // if userid changed -> get data
-        axios.get('http://127.0.0.1:3000/api/detail?user_id='+userid+'&method='+method)
+        axios.get('http://127.0.0.1:3000/api/user/'+method+'?user-id='+userid)
                 .then((Response)=>
                 {   
                     IncomeFromBack(Response.data);
@@ -67,7 +71,7 @@ function Createuser(){
         datum.append("age", age);
         datum.append("image", image);
 
-        axios.post("api/create-user", datum, {headers: { "Content-Type": "multipart/form-data"}})
+        axios.post("api/user", datum, {headers: { "Content-Type": "multipart/form-data"}})
         .then((response) => {alert(response.data['username'] + ' register success')})
         .catch((Error)=>{alert(Error)});
     }
@@ -87,7 +91,7 @@ function Createuser(){
                         </Grid>
                         <Grid item xs ={12} align="center">
                                         
-                            <input type= "number" onChange= {handleUseragechange} value = {age} />
+                            <input type= "number" onChange= {handleUseragechange} value = {age} min = "1" />
                         </Grid>
                         <Grid item xs={12} align="center">
                             <input type='file' 

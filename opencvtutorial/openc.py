@@ -14,6 +14,20 @@ if img1 is not None:
     cv2.destroyAllWindows()
 else:
     print("no image file")
+    영상 스트리밍 서버 
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 여러개 인자 받는거 다시 봐야함 = 을 안 붙여야 인식이 된다.. !!!!!!!!!!!!!!!!!!
+    a. python3 파일명.py --movie=어쩌구 0 
+    b. 실행args로영상파일지정 0
+        i. 실행 args 없는 경우 default 로 웹캠 영상 전송
+        웹소켓
+    c. 웹소캣으로 영상 전송 및 웹 서버에서 영상 재생
+       
+        i. 스트리밍 프로그램에서 웹서버 컨트롤러까지
+        웹소켓으로 프레임 전달
+        ii. 웹서버 컨트롤러에서 view 까지 웹소켓으로
+        프레임 전달
+    웹서버컨트롤러를이용한영상스트리밍
+        a. yield 이용 image tag 에서 지정한 url 로 스트리밍
 '''
 
 method_options = {}
@@ -33,7 +47,6 @@ def handle_image(resource, modes, output):
     print(modes)
 
     if img1 is not None:
-       
        for mode in modes:
            
            if mode == 1:
@@ -51,11 +64,20 @@ def handle_image(resource, modes, output):
                matrix = cv2.getRotationMatrix2D((width/2, height/2), int(angle), scale)
                img1 = cv2.warpAffine(img1, matrix, (width, height))
            elif mode == 5:
-               print(1)
-           elif mode ==6:
-               img1 = np.vstack(())
-           elif mode == 7:
-               img1 = np.hstack(())
+               b, g, r = cv2.split(img1)
+               img1 = cv2.merge((r,g,b))
+           else:
+               img2 = cv2.imread(resource + '/0.jpeg')
+               height , width = map(int, input("How much resize? Enter width and Height:").split())
+               img1 = cv2.resize(img1,dsize=(height, width), interpolation=cv2.INTER_AREA )
+               img2 = cv2.resize(img2,dsize=(height, width), interpolation=cv2.INTER_AREA )
+               if mode ==6:
+                   img1 = np.vstack((img1, img2))
+               elif mode == 7:
+                   img1 = np.hstack((img1, img2))
+               else:
+                   print("Wrong option picked.") 
+                   
        cv2.imwrite(output+'/'+'2.jpeg', img1)
        cv2.imshow('image1', img1)
        cv2.waitKey(1)

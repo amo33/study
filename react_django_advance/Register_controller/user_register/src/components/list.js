@@ -19,7 +19,7 @@ const List=()=>{
     }
     
     const handleToseedata=(val)=>{ //tsv or db 보고 싶으면.
-        axios.get('api/List?method='+val)
+        axios.get('api/user/'+val+'/')
       .then(response => {
           handledataupdate(response.data);
           onhandlestatus(val);
