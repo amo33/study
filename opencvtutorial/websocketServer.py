@@ -1,8 +1,27 @@
 import asyncio
 from opcode import hasfree
+from pyrsistent import b
 import websockets
 import argparse
-import cv2
+import base64, cv2
+import numpy as np
+import socket
+import struct 
+import pickle
+
+ip = '192.168.1.3'
+port = 50001 
+
+server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+# 소켓 주소 정보 할당
+server_socket.bind((ip, port))
+
+data_buffer = b""
+
+data_size = struct.calcsize('L')
+
+
 def show_video(video):
     if video == 'default':
         cam = cv2.VideoCapture(0)

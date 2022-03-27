@@ -15,7 +15,8 @@ if img1 is not None:
 else:
     print("no image file")
     영상 스트리밍 서버 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 여러개 인자 받는거 다시 봐야함 = 을 안 붙여야 인식이 된다.. !!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 여러개 인자 받는거 다시 봐야함 = 을 안 붙여야 인식이 된다.. --> 해결함 
+    day 2. 
     a. python3 파일명.py --movie=어쩌구 0 
     b. 실행args로영상파일지정 0
         i. 실행 args 없는 경우 default 로 웹캠 영상 전송
@@ -26,7 +27,7 @@ else:
         웹소켓으로 프레임 전달
         ii. 웹서버 컨트롤러에서 view 까지 웹소켓으로
         프레임 전달
-    웹서버컨트롤러를이용한영상스트리밍
+    day 3.웹서버컨트롤러를이용한영상스트리밍
         a. yield 이용 image tag 에서 지정한 url 로 스트리밍
 '''
 
@@ -47,23 +48,23 @@ def handle_image(resource, modes, output):
     print(modes)
 
     if img1 is not None:
-       for mode in modes:
-           
-           if mode == 1:
+       for mode in modes[0]:
+           print(mode)
+           if mode == '1':
                height , width = map(int, input("How much resize? Enter width and Height:").split())
                img1 = cv2.resize(img1,dsize=(height, width), interpolation=cv2.INTER_AREA )
-           elif mode==2:
+           elif mode=='2':
                x, w, y, h = map(int, input("Enter Crop territory starting with width part.(x,w,y,h)").split())
                img1 = img1[y:y+h, x:x+w]
-           elif mode == 3:
+           elif mode == '3':
                img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-           elif mode == 4:
+           elif mode == '4':
                angle, scale = map(float, input("Type rotation angle in (90, 180, 270, 360) and Type scale (type 1 if you don't want to change scale):").split())
                height, width, channel = img1.shape
                print(height, width)
                matrix = cv2.getRotationMatrix2D((width/2, height/2), int(angle), scale)
                img1 = cv2.warpAffine(img1, matrix, (width, height))
-           elif mode == 5:
+           elif mode == '5':
                b, g, r = cv2.split(img1)
                img1 = cv2.merge((r,g,b))
            else:
@@ -71,9 +72,9 @@ def handle_image(resource, modes, output):
                height , width = map(int, input("How much resize? Enter width and Height:").split())
                img1 = cv2.resize(img1,dsize=(height, width), interpolation=cv2.INTER_AREA )
                img2 = cv2.resize(img2,dsize=(height, width), interpolation=cv2.INTER_AREA )
-               if mode ==6:
+               if mode =='6':
                    img1 = np.vstack((img1, img2))
-               elif mode == 7:
+               elif mode == '7':
                    img1 = np.hstack((img1, img2))
                else:
                    print("Wrong option picked.") 
@@ -89,7 +90,7 @@ def handle_image(resource, modes, output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Echo openc --img-dir IMG_DIR --mode MODE --result-dir RESULT_DIR") #Idir : input dir, Rdir: result dir
     parser.add_argument('--img-dir', help="Image_resource_dir",required=True)
-    parser.add_argument('--mode', type = int ,help="Image_change_option", nargs='+', required=True)
+    parser.add_argument('--mode', type = list ,help="Image_change_option", nargs='+', required=True)
     parser.add_argument('--result-dir', help="Image_output_dir" ,required=True)
 
     args = parser.parse_args()

@@ -23,8 +23,6 @@ class UserView(generics.CreateAPIView):
         if serializer.is_valid():
             username = serializer.data.get('username')
             age = serializer.data.get('age')
-            if age == 0:
-                age += 1
             if request.FILES.get('image')!= None:
                 image = request.FILES.get('image')
                 image_for_thumb = Image.open(image) 
@@ -46,11 +44,12 @@ class UserView(generics.CreateAPIView):
 
         return Response({'Bad Request': 'Invalid data...'}, status= status.HTTP_400_BAD_REQUEST)
     serializer_class = Userserializer
-    def get(self, request, datatype): 
-        method = datatype[:-1] if datatype.strip()[-1] == '/' else datatype
-        id = request.GET.get('user-id',None)
-        if method == 'showdb': # DB일때
-            queryset = USer.objects.all() if id == None else USer.objects.filter(id=id)
+    def get(self, request ,userid=None): 
+        method = request.GET.get('method',None)
+        print(method)
+        print(userid)
+        if method == 'db': # DB일때
+            queryset = USer.objects.all() if userid == None else USer.objects.filter(id=userid)
             user = []
             for element in queryset:
                 user.append({
@@ -62,17 +61,17 @@ class UserView(generics.CreateAPIView):
                     "image_path" : element.image_path if id != None else None,
                 })
             return Response(user , status=status.HTTP_200_OK)
-        elif method == 'showlist': # text 일때
+        elif method == 'text': # text 일때
             df = pd.read_csv('data.tsv', sep='\t')
             df_copy = df.copy()
-            if id == None:
+            if userid ==None:
                 df_copy['Image_flag'] = df_copy['image_path'].apply(lambda x :1 if x != 'None' else 0)
                 df_copy.drop('image_path', axis=1, inplace=True)
                 user = df_copy.to_dict('records')
-            elif id != None:
+            elif userid != None:
                     
                 user = []
-                idx =df_copy.index[df_copy['id'] == int(id)].tolist()[0]
+                idx =df_copy.index[df_copy['id'] == int(userid)].tolist()[0]
                 user_info = df_copy.loc[idx]
                 user.append({
                     "user_id" : user_info.user_id,

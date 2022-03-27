@@ -19,7 +19,7 @@ const List=()=>{
     }
     
     const handleToseedata=(val)=>{ //tsv or db 보고 싶으면.
-        axios.get('api/user/'+val+'/')
+        axios.get('api/users'+'?method='+val)
       .then(response => {
           handledataupdate(response.data);
           onhandlestatus(val);
@@ -37,14 +37,14 @@ const List=()=>{
                         </Typography>
                     </Grid>
                     <Grid item xs={8} align="center">
-                        <Button color= 'primary' variant="contained" value= {'showdb'} onClick={() => handleToseedata('showdb')}>
+                        <Button color= 'primary' variant="contained" value= {'db'} onClick={() => handleToseedata('db')}>
                             <Link to = '/list?category=showdb'>show me Database</Link>
                         </Button>
                     </Grid>
                     <Grid item xs={8} align="center">
                         
-                        <Button color= 'secondary' variant="contained" value={'showlist'} onClick={() => handleToseedata('showlist')}>
-                        <Link to = '/list?category=showlist'>show me list </Link>
+                        <Button color= 'secondary' variant="contained" value={'text'} onClick={() => handleToseedata('text')}>
+                        <Link to = '/list?category=showlist'>show me text </Link>
                         </Button>
                         
                     </Grid>

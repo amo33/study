@@ -26,7 +26,6 @@ function Createuser(){
         else{
             setname(name);
         }
-        
     }
     const handleimageuploaded = (e)=>{ // image updated
         setimage(e.target.files[0])
@@ -36,26 +35,25 @@ function Createuser(){
     }
     
     const handleUseragechange=(e)=>{ //age change
-        let num = e.target.value.replace(/\+-./g, '');
+        let num = e.target.value;
         if (num <=0){
             alert('0 Entered!')
             num = 1;
         }
         if(!isFinite(num)) return
         num = num.toString()
+        num = num.replace(/\+-./g, '');
         if (num !== '0' && !num.includes('.')){
             num = num.replace(/^0+/,'')
             setage(num);
         }
         else{
             alert('Not allowed value');
-
         }
-        
     }
 
     useEffect(()=>{ // if userid changed -> get data
-        axios.get('http://127.0.0.1:3000/api/user/'+method+'?user-id='+userid)
+        axios.get('http://127.0.0.1:3000/api/users/'+userid+'?method='+method)
                 .then((Response)=>
                 {   
                     IncomeFromBack(Response.data);
@@ -71,7 +69,7 @@ function Createuser(){
         datum.append("age", age);
         datum.append("image", image);
 
-        axios.post("api/user", datum, {headers: { "Content-Type": "multipart/form-data"}})
+        axios.post("api/users", datum, {headers: { "Content-Type": "multipart/form-data"}})
         .then((response) => {alert(response.data['username'] + ' register success')})
         .catch((Error)=>{alert(Error)});
     }
