@@ -12,7 +12,7 @@ function ShowData(props){
                     <tr> 
                     <th>Name</th>
                     <th>Age</th>
-                    {(props.status === 'detail') ? <th>user_id</th> : null}
+                    {(props.status === 'deta') ? <th>user_id</th> : null}
                     {(props.status === 'list') ? <th>Image_Flag</th> : null}
                     {(props.status === 'detail') ? <th>Image path</th> : null}
                     </tr>
@@ -25,7 +25,7 @@ function ShowData(props){
                         {(props.status === 'list') ? <td> <Link to = {'/members/'+ val.id + '/'+ props.method}>{val.username}</Link></td> : null}
                         {(props.status === 'detail') ? <td>{val.username}</td> : null}
                         <td>{val.age}</td>
-                        {(props.status === 'detail')? <td>{val.user_id}</td> : null}
+                        {(props.status === 'deta')? <td>{val.user_id}</td> : null}
                         {(props.status === 'list') ?<td>{val.Image_flag}</td>: null}
                         {(props.status === 'list') ? null :
                          (props.status === 'detail' && (val.image_path != '0' && val.image_path != undefined)) ? <td><img src= {process.env.PUBLIC_URL+val.image_path}/></td> : <td>No Image</td>}
