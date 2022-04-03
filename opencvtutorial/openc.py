@@ -217,7 +217,7 @@ if __name__ == '__main__': # todo argsparse 세팅 시 , or 공백으로 인정�
 #https://chrisjune-13837.medium.com/%EC%9D%B8%EC%BD%94%EB%94%A9%EA%B3%BC-%EB%94%94%EC%BD%94%EB%94%A9-87006cf8dee2
 #https://greeksharifa.github.io/references/2019/02/12/argparse-usage/#action%EC%9D%98-%EC%A2%85%EB%A5%98-%EC%A7%80%EC%A0%95 -> branch study(git)
 
-'''
+''' # 해당 주석은 crop시 사용자 입력 값에 대해 오류를 제어하려고 작성 -> 하지만 사용자 입력의 오류 또한 너무 오류를 관대하게 바라보는 것은 좋지 않기에 이는 코드에서 제외
                if y + h < 0: 
                    if y > 0: # 시작점이 더 큰데 음수쪽으로 slice해버리면 0에서부터 slice 한다고 생각 #todo
                        h = y

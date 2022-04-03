@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine prediction</title>
+</head>
+<body>
+    
+    <div>
+        <div id= "Input">
+        <form action="/wine">
+            <input type="number" id="alcohol">Alcohol</input>
+            <input type="number" id="fixed">Fixed Acidity</input>
+            <input type="number" id="sulphates">Sulphates</input>
+        </form>
+        </div>
+        <div id="display">
+            {% if data is defined %}
+                <h4>{{data["result"]}}</h4>
+	        {% endif %}
+        </div>
+    </div>
+    <script> 
+        /*
+        $.ajax({
+            type:'get',
+            url:'/wine',
+            data:{},
+            success: (data)=>{
+                let resultDiv = document.createElement("div");
+                let winedata = document.createTextNode(data['score']);
+                resultDiv.appendChild(winedata);
+
+                let loc = document.getElementById('display');
+                loc.body.innnerHTML+=resultDiv;
+            }
+        })
+        */
+    </script>
+
+</body>
+</html>
