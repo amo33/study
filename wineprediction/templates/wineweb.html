@@ -9,18 +9,30 @@
 <body>
     
     <div>
+        {%if error is defined%}
+        <h2>Error! Previous Wrong Input! Try again..!</h2>
+        {% endif %}
+        {% if data is not defined %}
         <div id= "Input">
-        <form action="/wine">
-            <input type="number" id="alcohol">Alcohol</input>
-            <input type="number" id="fixed">Fixed Acidity</input>
-            <input type="number" id="sulphates">Sulphates</input>
+        <form action="/wine" method="post">
+            <input type="text" name="alcohol">Alcohol(8~15)</input>
+            <br>
+            <input type="text" name="pH">pH(2.5~4.5)</input>
+            <br>
+            <input type="text" name="sulphates">Sulphates(0~2)</input>
+            <br>
+            <input type="submit" value="submit"/>
         </form>
+        {% endif %}
         </div>
         <div id="display">
             {% if data is defined %}
-                <h4>{{data["result"]}}</h4>
+                <h4>The expected value is{{data}}</h4>
+
+                <button type="button" onclick="location.href='/'">Go back</button>
 	        {% endif %}
         </div>
+        
     </div>
     <script> 
         /*
