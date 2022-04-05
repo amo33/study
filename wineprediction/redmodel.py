@@ -1,14 +1,14 @@
-from gc import callbacks
 import tensorflow as tf 
 import pandas as pd 
 import numpy as np 
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.linear_model import LinearRegression
 from sklearn import svm
-import pickle
+import pickle , os
 from sklearn import preprocessing 
 from sklearn.metrics import classification_report
 df = pd.read_csv('winequality-red.csv',';')
+'''
 standard_scaler_x = preprocessing.StandardScaler()
 standard_scaler_y = preprocessing.StandardScaler()
 red_df = pd.DataFrame(df)
@@ -40,7 +40,11 @@ def svc_param_selection(X,y,nfolds):
 
 model = svc_param_selection(red_df_x_train, red_df_y_train.values.ravel(),5)
                                                     # scale안하면 dataframe 상태여서 values붙여야한다.
-with open('models/model.pkl','wb') as f: 
+
+if os.path.isfile('models/Redwine.pkl') == False:
+    os.makedirs('models/Redwine.pkl')
+
+with open('models/Redwine.pkl','wb') as f: 
     pickle.dump(model, f)
 
 #print('training accuracy:', model.score(red_df_x_train, red_df_y_train))
@@ -58,4 +62,42 @@ def my_score(result, answer):
 
 #print('(category) train set accuracy', my_score(red_df_x_train, red_df_y_train))
 #print('(category) test set accuracy', my_score(red_df_x_test, red_df_y_test))
+'''
+# model = tf.compat.v1.global_variables_initializer()
+# sc_x = preprocessing.StandardScaler()
+# sc_y = preprocessing.StandardScaler()
 
+tf.reset_default_graph()
+red_df = pd.DataFrame(df)
+red_df_duplicate_dropped = df.copy()
+red_df_duplicate_dropped.drop_duplicates(subset=None, inplace=True)
+y = red_df_duplicate_dropped[["quality"]]
+x = red_df_duplicate_dropped[['sulphates','alcohol','pH']]
+
+X = tf.compat.v1.placeholder(tf.float32, shape=[None, 3], name= "input")
+Y = tf.compat.v1.placeholder(tf.float32, shape = [None, 1], name="output")
+W = tf.Variable(tf.compat.v1.random_normal([3,1]), name ="weight")
+b = tf.Variable(tf.compat.v1.random_normal([1]), name="bias")
+
+hypothesis = tf.matmul(X, W)+b 
+cost = tf.reduce_mean(tf.square(hypothesis - Y))
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 0.000005)
+train = optimizer.minimize(cost)
+
+sess = tf.compat.v1.Session()
+init = tf.compat.v1.global_variables_initializer()
+sess.run(init)
+
+for step in range(10000):
+    hypo2, cost2 , third = sess.run([hypothesis, cost, train], feed_dict={X:x, Y:y})
+    if step % 500 == 0:
+        print("#",step, "Cost: ",cost2)
+        print("value: ", hypo2[0])
+
+#if os.path.isfile('models/Redwine.pkl') == False:
+#    os.makedirs('models/Redwine.pkl')
+
+#with open('models/Redwine.pkl','wb') as f: 
+   # pickle.dump(model, f)
+saver = tf.compat.v1.train.Saver()
+save_path = saver.save(sess, 'redwinemodel/redwine.ckpt')
