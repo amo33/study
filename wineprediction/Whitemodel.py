@@ -1,12 +1,9 @@
 import tensorflow as tf 
 import pandas as pd 
 import numpy as np 
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.linear_model import LinearRegression
-from sklearn import svm
-import pickle , os
-from sklearn import preprocessing 
-from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+import pickle 
+import tensorflow_datasets as tfds
 df = pd.read_csv('winequality-white.csv',';')
 '''
 standard_scaler_x = preprocessing.StandardScaler()
@@ -70,6 +67,14 @@ white_df_duplicate_dropped = df.copy()
 white_df_duplicate_dropped.drop_duplicates(subset=None, inplace=True)
 y = white_df_duplicate_dropped[["quality"]]
 x = white_df_duplicate_dropped[['sulphates','alcohol','pH']]
+scaling_value = {}
+
+def min_max_scaler(col,data):
+    max_val = np.max(data)
+    min_val = np.min(data)
+    scaling_value[col]=[max_val,min_val]
+
+    return data.apply(lambda x: (x - min_val)/(max_val-min_val))
 
 def outlier_iqr(data):
     q1, q3 = np.percentile(data, [25,75])
@@ -80,53 +85,60 @@ def outlier_iqr(data):
     
     return np.where((data > upper_bound)|(data < lower_bound))
 
+
 pH_outlier_index = outlier_iqr(x['pH'])[0]
 sulphates_outlier_index = outlier_iqr(x['sulphates'])[0]
 alcohol_outlier_index = outlier_iqr(x['alcohol'])[0]
 
-
-total_outlier_index = np.concatenate((pH_outlier_index, sulphates_outlier_index, alcohol_outlier_index))
+total_outlier_index = np.unique(np.concatenate((pH_outlier_index, sulphates_outlier_index, alcohol_outlier_index)), 0)
 
 Not_outlier = []
-
+print(x.shape)
 for i in x.index:
     if i not in total_outlier_index:
         Not_outlier.append(i)
-
 x_clean = x.loc[Not_outlier]
 x_clean = x_clean.reset_index(drop=True)
 y_clean = y.loc[Not_outlier]
 y_clean = y_clean.reset_index(drop=True)
-sc_x = preprocessing.MinMaxScaler()
-#sc_y = preprocessing.MinMaxScaler()
+print(y_clean.shape)
+print(x_clean.shape)
+x_clean['sulphates'] = min_max_scaler('sulphates',x_clean['sulphates'])
+x_clean['alcohol'] = min_max_scaler('alcohol',x_clean['alcohol'])
+x_clean['pH'] = min_max_scaler('pH',x_clean['pH'])
 
-#sc_x = preprocessing.RobustScaler()
-#sc_y = preprocessing.RobustScaler()
-x_clean = sc_x.fit_transform(x_clean)
-#y_clean = sc_y.fit_transform(y_clean)
 X = tf.compat.v1.placeholder(tf.float32, shape=[None, 3], name= "input")
 Y = tf.compat.v1.placeholder(tf.float32, shape = [None, 1], name="output")
+
 W = tf.Variable(tf.compat.v1.random_normal([3,1]), name ="weight")
 b = tf.Variable(tf.compat.v1.random_normal([1]), name="bias")
-print(len(x_clean))
-
 
 hypothesis = tf.matmul(X, W)+b 
 cost = tf.reduce_mean(tf.square(hypothesis - Y))
-optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 0.01)
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 1e-4)
 train = optimizer.minimize(cost)
 
 sess = tf.compat.v1.Session()
 init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
-for step in range(10000):
+saver = tf.compat.v1.train.Saver([W, b])
+print(x_clean.head(10))
+for step in range(300001):
     x_train, x_test,y_train,y_test = train_test_split(x_clean,y_clean,test_size=0.3, random_state=100, shuffle=True)
+    #x_train, x_test,y_train,y_test = tfds.load(
+        #
+    #)
+    tmp, loss_val = sess.run([train,cost], feed_dict={X:x_train, Y:y_train})
+    if step % 1000 == 0:
+        print("#",step, "Cost: ",loss_val)
+        
+        saver.save(sess, 'whitewinemodel/train1',step)
 
-    hypo2, cost2 , third = sess.run([hypothesis, cost, train], feed_dict={X:x_train, Y:y_train})
-    if step % 500 == 0:
-        print("#",step, "Cost: ",cost2)
-        print("value: ", hypo2[0])
+sess.close()
+
+with open('whitewine.pickle','wb') as fw:
+    pickle.dump(scaling_value, fw)
 
 #if os.path.isfile('models/Whitewine.pkl') == False:
 #    os.makedirs('models/Whitewine.pkl')
@@ -134,6 +146,5 @@ for step in range(10000):
 #with open('models/Redwine.pkl','wb') as f: 
    # pickle.dump(model, f)
    
-saver = tf.compat.v1.train.Saver()
-save_path = saver.save(sess, 'whitewinemodel/whitewine.ckpt')
+
 

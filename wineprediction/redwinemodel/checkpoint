@@ -1,2 +1,2 @@
-model_checkpoint_path: "redwine"
-all_model_checkpoint_paths: "redwine"
+model_checkpoint_path: "train1-60000"
+all_model_checkpoint_paths: "train1-60000"
