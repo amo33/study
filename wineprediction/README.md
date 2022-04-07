@@ -1,7 +1,8 @@
 
  ### These codes below are my own savings in order to remember model calling in tensorflow 1.15
  '''python
-        this example is when I use pickle to save model(I didn't use this method)
+
+        #this example is when I use pickle to save model(I didn't use this method)
         if winedata == 'red':
             model = pickle.load(open('models/Redwine.pkl','rb')) #pickle 사용을 추천합니다 instead of sklearn.joblib
             # but this time, I used ckpt for tensorflow 1.15 (please use ckpt to save model)
@@ -24,6 +25,7 @@
 
 #### This code is using Sklearn Scaler and GRIDSEARCHCV. Because of using GRIDCV it was too slow. (So I didn't use it.)
 '''python
+
         standard_scaler_x = preprocessing.StandardScaler()
         standard_scaler_y = preprocessing.StandardScaler()
         red_df = pd.DataFrame(df)
@@ -82,6 +84,7 @@
 ##### For Tensorflow 1.x - We use sess(tf.session 's) to train. And we find out the predcition rate. 
 ##### This example, I used test data for model's accuarcy but, normally we use validation data to prevent overfitting.
 '''python 
+
         for i in range(len(x_train)):
             h_val = sess.run(hypothesis, feed_dict={X: x_train.iloc[i,:].reshape(1,)})
             print("Answer:", y_train[i], " Prediction:", h_val)
