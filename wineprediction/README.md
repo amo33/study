@@ -1,28 +1,28 @@
 
  ### These codes below are my own savings in order to remember model calling in tensorflow 1.15
  '''python
-        # this example is when I use pickle to save model(I didn't use this method)
-        if winedata == 'red':
-            model = pickle.load(open('models/Redwine.pkl','rb')) #pickle 사용을 추천합니다 instead of sklearn.joblib
-            # but this time, I used ckpt for tensorflow 1.15 (please use ckpt to save model)
-        elif winedata == 'white':
-            model = pickle.load(open('models/Whitewine.pkl','rb'))
+    this example is when I use pickle to save model(I didn't use this method)
+    if winedata == 'red':
+        model = pickle.load(open('models/Redwine.pkl','rb')) #pickle 사용을 추천합니다 instead of sklearn.joblib
+        # but this time, I used ckpt for tensorflow 1.15 (please use ckpt to save model)
+    elif winedata == 'white':
+        model = pickle.load(open('models/Whitewine.pkl','rb'))
         
-        #prediction = model.predict(data) -> data 활용해서 구하면 된다.
-        #print(prediction)
-        #print(model.best_estimator_.coef_) 
+    #prediction = model.predict(data) -> data 활용해서 구하면 된다.
+    #print(prediction)
+    #print(model.best_estimator_.coef_) 
 '''
 
 '''python 
-        #size= 3
-        #X = tf.placeholder(tf.float32, shape=[None, size])
-        #W = tf.Variable(tf.random_normal([size, 1]), name='weight')
-        #b = tf.Variable(tf.random_normal([1]), name='bias')
-        #sess = tf.Session()
-        #sess.run(tf.global_variables_initializer())
-        #hypothesis = tf.add(tf.matmul(X,W),b)
-        #prediction = tf.round(hypothesis)
-        # If I use this method after calling the model, there is an error on using weight and bias.(It doesn't call the right trained one.) 
+        size= 3
+        X = tf.placeholder(tf.float32, shape=[None, size])
+        W = tf.Variable(tf.random_normal([size, 1]), name='weight')
+        b = tf.Variable(tf.random_normal([1]), name='bias')
+        sess = tf.Session()
+        sess.run(tf.global_variables_initializer())
+        hypothesis = tf.add(tf.matmul(X,W),b)
+        prediction = tf.round(hypothesis)
+        #If I use this method after calling the model, there is an error on using weight and bias.(It doesn't call the right trained one.) 
 '''
 
 #### This code is using Sklearn Scaler and GRIDSEARCHCV. Because of using GRIDCV it was too slow. (So I didn't use it.)
@@ -49,12 +49,12 @@ def svc_param_selection(X,y,nfolds):
     return clf
 
 
-#1 model = svm.SVR(kernel='linear') #,validation_split = 0.33 , callbacks=[model_callback]
-#1 for i in range(10):
-#1   start = i*139
-#1   end = start + 139
-#1   model.fit(red_df_x_train.loc[[i not in range(start,end)], :], red_df_y_train)
-#1 model.fit(red_df_x_train, red_df_x_test) # 왜 cross validation 구현을 못하겠지?
+ model = svm.SVR(kernel='linear') #,validation_split = 0.33 , callbacks=[model_callback]
+ for i in range(10):
+   start = i*139
+   end = start + 139
+   model.fit(red_df_x_train.loc[[i not in range(start,end)], :], red_df_y_train)
+ model.fit(red_df_x_train, red_df_x_test) # 왜 cross validation 구현을 못하겠지?
 
 model = svc_param_selection(red_df_x_train, red_df_y_train.values.ravel(),5)
                                                     # scale안하면 dataframe 상태여서 values붙여야한다.
@@ -84,7 +84,7 @@ def my_score(result, answer):
 
 ##### For Tensorflow 1.x - We use sess(tf.session 's) to train. And we find out the predcition rate. 
 ##### This example, I used test data for model's accuarcy but, normally we use validation data to prevent overfitting.
-'''
+'''python 
 for i in range(len(x_train)):
     h_val = sess.run(hypothesis, feed_dict={X: x_train.iloc[i,:].reshape(1,)})
     print("Answer:", y_train[i], " Prediction:", h_val)
