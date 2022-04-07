@@ -1,7 +1,7 @@
 
  ### These codes below are my own savings in order to remember model calling in tensorflow 1.15
  ```python
-        this example is when I use pickle to save model(I didn't use this method)
+        #this example is when I use pickle to save model(I didn't use this method)
         if winedata == 'red':
             model = pickle.load(open('models/Redwine.pkl','rb')) #pickle 사용을 추천합니다 instead of sklearn.joblib
             # but this time, I used ckpt for tensorflow 1.15 (please use ckpt to save model)
