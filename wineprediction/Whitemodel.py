@@ -85,7 +85,7 @@ print("실제값", y_test)
 is_correct = tf.equal(tf.round(hypothesis), y_test)
 accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
 print("정확도: ",sess.run(accuracy*100, feed_dict={X:x_test, Y:y_test}))
-
+print(wineoption)
 
 sess.close()
 

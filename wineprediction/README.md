@@ -97,3 +97,39 @@
             pre = sess.run(hypothesis, feed_dict={X: x_test.iloc[i].reshape(1,)})
             print(x_test[i],"=>",pre[0])
 ```
+```python
+        # url 내로의 redirect시, front에서 받은 form action data를 redirect된 곳에서도 사용하게 하려면
+        # Don't use json dump
+        # EX) wine = json.dumps({"alcohol":alcohol,"pH":pH,"sulphates":sulphates})  redirect ('@@@', data = wine) (X)
+        #Use session to hold data
+```
+
+```python 
+        # tensorflow 1.15 -> 
+        # if bring graph like this, I will get an stored weight structure and bias structure with random values.
+        # I think I really didn't figure it out of how to use graph as saving and calling models.
+        # Need to improve and find this method.\n So if you are not familiar with using graph, I recommend you to call value of stored weight and bias by using sess.run("weight's defined name") something like this.
+        graph = tf.compat.v1.get_default_graph() # 저장된 graph가져오기 
+        sess.run(tf.global_variables_initializer())
+        W = graph.get_tensor_by_name("weight:0") # 모델 가져오기 
+    
+
+        b = graph.get_tensor_by_name("bias:0") #모델 가져오기 
+        
+```
+
+```python
+        data=np.float32([x.iloc[i]['density'],x.iloc[i]['alcohol'],x.iloc[i]['residual sugar'], x.iloc[i]['volatile acidity'], x.iloc[i]['chlorides']]) #데이터는 numpy 형태로
+        # 사실상 data에 넣어주는 값은  이차원 리스트를 float32로 바꿔준다.
+        data[0] = Standardscaler('density', data[0])
+        data[1] = Standardscaler('alcohol',data[1])
+        data[2] = Standardscaler('residual sugar',data[2])
+        data[3] = Standardscaler('volatile acidity', data[3])
+        data[4] = Standardscaler('chlorides', data[4])
+        #This is same with
+        data = []
+        for col in attributes:
+            attr = x.iloc[i][col] # 이차원 리스트로 만들다.
+            data.append(Standardscaler(col,np.float32(attr)))
+        data = np.float32(data)  # 이차원 리스트 자체를 만들어서 넣어준다. 밑에 코드처럼 쓰는것이 간결하다.
+```
