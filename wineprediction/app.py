@@ -3,7 +3,6 @@ from flask import Flask, render_template, request,redirect, url_for, session
 import pickle
 import numpy as np
 import pandas as pd
-from customfunction import *
 # session use to constantly save form data
 app = Flask(__name__)
 #CORS(app)
@@ -44,19 +43,19 @@ def wine_result(winedata):
     with tf.compat.v1.Session() as sess:
         if winedata == 'red':
             saver = tf.compat.v1.train.import_meta_graph('redwinemodel/train1-60000.meta')
-            #saver = tf.train.Saver()
             saver.restore(sess, tf.train.latest_checkpoint('redwinemodel/./'))
-            df = pd.read_csv('winequality-red.csv',';')
+            df = pd.read_csv('data/test/wine-red.csv',',')
         elif winedata == 'white':
             saver = tf.compat.v1.train.import_meta_graph('whitewinemodel/train1-60000.meta')
             saver.restore(sess, tf.train.latest_checkpoint('whitewinemodel/./'))
-            df = pd.read_csv('winequality-white.csv',';')
+            df = pd.read_csv('data/train/winequality-white.csv',',')
+            print(df)
         with open(winedata+'wine.pickle', 'rb') as fr:
             wine_scale_loaded = pickle.load(fr)
             print(wine_scale_loaded)
 
         attributes = list(wine_scale_loaded.keys())
-       
+        #attributes =['sulphates','alcohol','citric acid',"volatile acidity"]
         data = []
         for col in attributes:
             attr = session[col]
@@ -67,24 +66,34 @@ def wine_result(winedata):
         data = data.reshape(1,-1) #한 column에 대한 값들이면 (-1,1) 한 row에 대한 값이라면 (1,-1)
         send = tf.add(tf.matmul(data,sess.run("weight:0")),sess.run("bias:0"))
         print(sess.run("weight:0"))
-        
+        '''
         df = pd.DataFrame(df)
-        df.drop_duplicates(subset=None, inplace=True)
         result = df[["quality"]]
+        #x = df[0:-1]
+        #temp_attribute = list(df.columns)
+        #attributes = temp_attribute[0:-1]
+        
         x = df[attributes]
-        
+        idx= df.shape[0]
+        print(idx)
         res = 0
-        
-        for i in range(30):
+        val_distribution = [0 for _ in range(1, 11)]
+        for i in range(idx):
             data = []
             for col in attributes:
                 attr = x.iloc[i][col]
-                data.append(Standardscaler(col,np.float32(attr)))
+                data.append(Standardscaler(wine_scale_loaded,col,attr))
             data = np.float32(data)
             
             data = data.reshape(1,-1)
             
             hypothesis = tf.add(tf.matmul(data,sess.run("weight:0")),sess.run("bias:0")) 
+            hypothesis_result = np.round(hypothesis.eval())
+            if hypothesis_result== result.iloc[i].values: # add_1:0 값이라고 뜨는건 형태를 add_1:0의 값을 사용했다라고 표현. 이건 결과 값이 아니다. eval()을 써야 값이 나온다. in order to change tensor to scalar
+                    #print(np.round(hypothesis.eval()))
+                val_distribution[int(hypothesis_result)] += 1
+                res +=1
+        
             if winedata == 'white':
 
                 if (np.round(hypothesis.eval()))== result.iloc[i].values: # add_1:0 값이라고 뜨는건 형태를 add_1:0의 값을 사용했다라고 표현. 이건 결과 값이 아니다. eval()을 써야 값이 나온다. in order to change tensor to scalar
@@ -97,14 +106,23 @@ def wine_result(winedata):
                     res +=1
                 #if (np.trunc(hypothesis.eval())+1)== result.iloc[i].values: # add_1:0 값이라고 뜨는건 형태를 add_1:0의 값을 사용했다라고 표현. 이건 결과 값이 아니다. eval()을 써야 값이 나온다. in order to change tensor to scalar
                 #    print(np.trunc(hypothesis.eval())+1)
-                    
-                    
-        print("%0.2f%%" % (res/ 30))
-         
-        val=np.round(send[0][0].eval())    
-        #prediction =sess.run(hypothesis ,feed_dict={X:data})
+                #    res +=1
+        
+        print(res, idx)
+        print("=================")
+        print("result of prediction list")
+        print(val_distribution)
+        '''
+        val=np.round(send[0][0].eval())
+        #val = 0
         return render_template('wineweb.html',data = val)
+
+def Standardscaler(scaling_value,col,data):
+    mean_val = scaling_value[col][0]
+    std_val = scaling_value[col][1]
     
+    return (data - mean_val)/(std_val)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
 
