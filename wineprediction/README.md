@@ -133,3 +133,6 @@
             data.append(Standardscaler(col,np.float32(attr)))
         data = np.float32(data)  # 이차원 리스트 자체를 만들어서 넣어준다. 밑에 코드처럼 쓰는것이 간결하다.
 ```
+
+#### 이번에 코드짜면서 한번더 알게된 사실 : html에서 쓰이는 javascript 함수는 5개의 함수가 존재하는데 1개의 함수(A)라도 에러가 난다면 html에서 onclick에 쓰이는 함수(B)를 불러오는데 에러가 난다.
+#### referecningError -> function B is not defined. 
