@@ -49,11 +49,18 @@ x = wine_df[options]
 y= wine_df[['quality']]
 scaling_value = {}
 
+
+
+pre_time = 0
+x_clean  = x.copy()
+y_clean  = y.copy()
+for attr in options:
+    x_clean[attr] = Standardscaler(scaling_value, attr, x_clean[attr])
 '''
 parsed_index = [0 for i in range(len(options))]
 i = 0
 for attr in options:
-   parsed_index[i] = outlier_iqr(x[attr])[0]
+   parsed_index[i] = outlier_iqr(x_clean[attr])[0]
    i +=1
 total_outlier_index = np.unique(np.concatenate((parsed_index)), 0)
 print(x.shape)
@@ -69,11 +76,6 @@ y_clean = y_clean.reset_index(drop=True)
 print(x_clean.shape)
 '''
 
-pre_time = 0
-x_clean  = x.copy()
-y_clean  = y.copy()
-for attr in options:
-    x_clean[attr] = Standardscaler(scaling_value, attr, x_clean[attr])
 
 size = len(options)
 X = tf.compat.v1.placeholder(tf.float32, shape=[None, size], name= "input")
@@ -102,7 +104,7 @@ saver = tf.compat.v1.train.Saver([W, b])
 op =round(x_clean.shape[0]*0.3)
 for step in range(10001): #
     
-    x_train, x_test,y_train,y_test = permutation_train_test_split(x_clean,y_clean,test_size=0.3, random_state=100)
+    x_train, x_valid,y_train,y_valid = permutation_train_test_split(x_clean,y_clean,test_size=0.3, random_state=100)
     tmp, loss_val= sess.run([train,cost], feed_dict={X:x_train, Y:y_train})
     
     current_time = time.time() 
@@ -113,20 +115,20 @@ for step in range(10001): #
         print("time :",current_time - pre_time)
         print((step+1)%op)
         print(op)
-        expect_val = sess.run([hypothesis], feed_dict={X:x_test.iloc[step % op ].values.reshape(-1,4)})
+        expect_val = sess.run([hypothesis], feed_dict={X:x_valid.iloc[step % op ].values.reshape(-1,4)})
         print("train value:",expect_val)
-        print("Real value:",y_test.iloc[step % op])
+        print("Real value:",y_valid.iloc[step % op])
     pre_time = current_time 
     if step == 10000:
         saver.save(sess, wineoption+'winemodel/train1',global_step=60000)  
          
 
 
-print("예측값", sess.run(hypothesis, feed_dict={X:x_test}))
-print("실제값", y_test)
-is_correct = tf.equal(tf.round(hypothesis), y_test)
+print("예측값", sess.run(hypothesis, feed_dict={X:x_valid}))
+print("실제값", y_valid)
+is_correct = tf.equal(tf.round(hypothesis), y_valid)
 accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-print("정확도: ",sess.run(accuracy*100, feed_dict={X:x_test, Y:y_test}))
+print("정확도: ",sess.run(accuracy*100, feed_dict={X:x_valid, Y:y_valid}))
 print(wineoption)
 
 sess.close()

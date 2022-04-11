@@ -1,3 +1,7 @@
+## BEcarful using OUTLIER DELETE 
+ ##### I used outlier to drop that might interrupt training and prediction. But as I used the outlier after scaling, The prediction rate shrinked at the surprising rate. 
+ ###### 1. Use outlier and find out how many data dropped. 
+ ###### 2. Try to shrink it in an low rate. (ex. 95% over and 5% less).
 
  ### These codes below are my own savings in order to remember model calling in tensorflow 1.15
  ```python

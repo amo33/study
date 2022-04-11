@@ -25,7 +25,7 @@ def wine_select():
 
     if wine == 'red':
         
-        session['acid'] = request.form['citric acid']
+        session['citric acid'] = request.form['citric acid']
         session['sulphates'] = request.form['sulphates']
         
     elif wine == 'white':
@@ -54,8 +54,8 @@ def wine_result(winedata):
             wine_scale_loaded = pickle.load(fr)
             print(wine_scale_loaded)
 
-        attributes = list(wine_scale_loaded.keys())
-        #attributes =['sulphates','alcohol','citric acid',"volatile acidity"]
+        #attributes = list(wine_scale_loaded.keys())
+        attributes =['sulphates','alcohol','citric acid',"volatile acidity"]
         data = []
         for col in attributes:
             attr = session[col]
@@ -66,7 +66,7 @@ def wine_result(winedata):
         data = data.reshape(1,-1) #한 column에 대한 값들이면 (-1,1) 한 row에 대한 값이라면 (1,-1)
         send = tf.add(tf.matmul(data,sess.run("weight:0")),sess.run("bias:0"))
         print(sess.run("weight:0"))
-        '''
+        
         df = pd.DataFrame(df)
         result = df[["quality"]]
         #x = df[0:-1]
@@ -112,7 +112,7 @@ def wine_result(winedata):
         print("=================")
         print("result of prediction list")
         print(val_distribution)
-        '''
+    
         val=np.round(send[0][0].eval())
         #val = 0
         return render_template('wineweb.html',data = val)
