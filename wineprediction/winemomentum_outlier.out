@@ -1,5 +1,8 @@
-sys:1: FutureWarning: In a future version of pandas all arguments of read_csv except for the argument 'filepath_or_buffer' will be keyword-only
-WARNING:tensorflow:From winemodel.py:27: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+sys:1: FutureWarniTraceback (most recent call last):
+  File "winemodel.py", line 8, in <module>
+    #wineoption = input("What kind of wine:")
+OSError: [Errno 5] Input/output error
+:27: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
 
      fixed acidity  volatile acidity  citric acid  ...  sulphates  alcohol  quality
 0              7.4             0.700         0.00  ...       0.56      9.4        5

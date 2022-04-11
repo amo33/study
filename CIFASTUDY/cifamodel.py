@@ -2,6 +2,7 @@
 #http://krasserm.github.io/2018/03/21/bayesian-optimization/
 #https://wooono.tistory.com/102
 #https://nittaku.tistory.com/264 -> 발표 준비용 (pooling 사용하는 이유 )
+#https://bskyvision.com/700
 #https://github.com/deep-diver/CIFAR10-img-classification-tensorflow/blob/master/CIFAR10_image_classification.ipynb -deep diver
 from flask import Flask, render_template, request,redirect, url_for, session
 import pickle
